@@ -1,17 +1,94 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Tranquil Trails - Experience North-East India">
+  <main>
+    <!-- Hero Section -->
+    <section class="relative h-[60vh] text-white">
+      <img src="https://placehold.co/1920x1080/000000/FFFFFF?text=Lush+Hills" alt="Lush green hills of Northeast India" class="absolute inset-0 object-cover w-full h-full">
+      <div class="absolute inset-0 bg-black opacity-50"></div>
+      <div class="relative z-10 flex flex-col items-center justify-center h-full text-center">
+        <h1 class="text-4xl font-bold md:text-6xl">Discover the Unseen Northeast India</h1>
+        <p class="mt-4 text-lg md:text-xl">Your journey to a premium, customized experience begins here.</p>
+        <a href="mailto:contact@tranquiltrails.com" class="px-8 py-3 mt-8 font-bold text-white bg-blue-600 rounded-full hover:bg-blue-700">Plan Your Journey</a>
+      </div>
+    </section>
+
+    <!-- Introduction Section -->
+    <section class="py-16 bg-white">
+      <div class="container px-4 mx-auto text-center">
+        <h2 class="text-3xl font-bold">Welcome to Tranquil Trails</h2>
+        <p class="max-w-3xl mx-auto mt-4 text-gray-600">We specialize in crafting unforgettable, premium travel itineraries exploring the breathtaking landscapes and vibrant cultures of Northeast India. Our promise is a seamless, personalized adventure tailored just for you.</p>
+      </div>
+    </section>
+
+    <!-- Destinations Showcase -->
+    <section class="py-16">
+      <div class="container px-4 mx-auto">
+        <h2 class="mb-8 text-3xl font-bold text-center">Featured Destinations</h2>
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div class="overflow-hidden bg-white rounded-lg shadow-lg">
+            <img src="https://placehold.co/600x400/333333/FFFFFF?text=Meghalaya" alt="Living Root Bridges, Meghalaya" class="object-cover w-full h-64">
+            <div class="p-6">
+              <h3 class="text-xl font-bold">Meghalaya's Living Root Bridges</h3>
+              <p class="mt-2 text-gray-600">Witness the natural marvels of bio-engineering.</p>
+            </div>
+          </div>
+          <div class="overflow-hidden bg-white rounded-lg shadow-lg">
+            <img src="https://placehold.co/600x400/555555/FFFFFF?text=Sikkim" alt="Monasteries in Sikkim" class="object-cover w-full h-64">
+            <div class="p-6">
+              <h3 class="text-xl font-bold">Sikkim's Serene Monasteries</h3>
+              <p class="mt-2 text-gray-600">Find peace in the tranquil mountain monasteries.</p>
+            </div>
+          </div>
+          <div class="overflow-hidden bg-white rounded-lg shadow-lg">
+            <img src="https://placehold.co/600x400/777777/FFFFFF?text=Arunachal" alt="Pristine Valleys of Arunachal Pradesh" class="object-cover w-full h-64">
+            <div class="p-6">
+              <h3 class="text-xl font-bold">Arunachal's Pristine Valleys</h3>
+              <p class="mt-2 text-gray-600">Explore the untouched beauty of the Himalayan frontier.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="py-16 bg-white">
+      <div class="container px-4 mx-auto">
+        <h2 class="mb-8 text-3xl font-bold text-center">The Tranquil Trails Difference</h2>
+        <div class="grid gap-8 md:grid-cols-3">
+          <div class="text-center">
+            <h3 class="text-xl font-bold">Personalized Itineraries</h3>
+            <p class="mt-2 text-gray-600">Every trip is uniquely designed to match your interests and desires.</p>
+          </div>
+          <div class="text-center">
+            <h3 class="text-xl font-bold">Luxury & Comfort</h3>
+            <p class="mt-2 text-gray-600">We partner with the finest hotels and resorts for your comfort.</p>
+          </div>
+          <div class="text-center">
+            <h3 class="text-xl font-bold">Expert Local Guides</h3>
+            <p class="mt-2 text-gray-600">Discover hidden gems with our knowledgeable local experts.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact CTA Section -->
+    <section class="py-16 text-center text-white bg-gray-800">
+      <div class="container px-4 mx-auto">
+        <h2 class="text-3xl font-bold">Ready for an Adventure?</h2>
+        <p class="max-w-2xl mx-auto mt-4">Let us craft your dream journey through Northeast India. Get in touch with our travel experts today.</p>
+        <a href="mailto:contact@tranquiltrails.com" class="inline-block px-10 py-3 mt-8 font-bold text-gray-800 bg-white rounded-full hover:bg-gray-200">Contact Us</a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 bg-gray-900 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2026 Tranquil Trails. All Rights Reserved.</p>
+            <p class="mt-2">Your premium guide to Northeast India.</p>
+        </div>
+    </footer>
+  </main>
+</Layout>
