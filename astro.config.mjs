@@ -1,11 +1,12 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://clarity-tech.github.io',
-  base: '/tranquil-tails-landing',
+  site: 'https://tranquiltrailtravels.com',
+  integrations: [sitemap()],
   vite: {
     plugins: [
       tailwindcss({

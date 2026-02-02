@@ -1,0 +1,144 @@
+---
+// Chat Widget Component - Floating contact form bubble
+---
+
+<!-- Chat Bubble Button -->
+<button
+  id="chat-bubble"
+  class="chat-bubble fixed bottom-6 right-6 z-50 bg-amber-600 hover:bg-amber-700 rounded-full p-4 shadow-lg cursor-pointer transition-all duration-300"
+  aria-label="Open contact form"
+>
+  <span class="chat-pulse"></span>
+  <svg class="w-6 h-6 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+  </svg>
+</button>
+
+<!-- Chat Panel -->
+<div
+  id="chat-panel"
+  class="fixed bottom-24 right-6 z-50 w-80 bg-white rounded-xl shadow-2xl border border-stone-200 hidden"
+>
+  <!-- Header -->
+  <div class="bg-amber-600 text-white px-4 py-3 rounded-t-xl flex items-center justify-between">
+    <h3 class="font-playfair text-lg font-medium">Let's Connect</h3>
+    <button id="chat-close" class="hover:bg-amber-700 rounded-full p-1 transition-colors" aria-label="Close">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Form -->
+  <form id="chat-form" class="p-4 space-y-4">
+    <p class="text-stone-600 text-sm">Share your details and we'll reach out to plan your journey.</p>
+
+    <div>
+      <label for="chat-name" class="block text-sm font-medium text-stone-700 mb-1">Name</label>
+      <input
+        type="text"
+        id="chat-name"
+        name="name"
+        required
+        placeholder="Your name"
+        class="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
+      />
+    </div>
+
+    <div>
+      <label for="chat-phone" class="block text-sm font-medium text-stone-700 mb-1">Phone</label>
+      <input
+        type="tel"
+        id="chat-phone"
+        name="phone"
+        required
+        placeholder="Your phone number"
+        class="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
+      />
+    </div>
+
+    <button
+      type="submit"
+      class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 rounded-lg transition-colors duration-300"
+    >
+      Connect with us
+    </button>
+  </form>
+
+  <!-- Success Message -->
+  <div id="chat-success" class="p-6 text-center hidden">
+    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+      <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+    </div>
+    <h4 class="font-playfair text-lg text-stone-900 font-medium">Thank you!</h4>
+    <p class="text-stone-600 mt-2">We'll connect with you shortly.</p>
+  </div>
+</div>
+
+<script>
+  const chatBubble = document.getElementById('chat-bubble');
+  const chatPanel = document.getElementById('chat-panel');
+  const chatClose = document.getElementById('chat-close');
+  const chatForm = document.getElementById('chat-form');
+  const chatSuccess = document.getElementById('chat-success');
+  const chatName = document.getElementById('chat-name') as HTMLInputElement;
+  const chatPhone = document.getElementById('chat-phone') as HTMLInputElement;
+
+  // Toggle panel
+  function openPanel() {
+    chatPanel?.classList.remove('hidden');
+    chatPanel?.classList.add('chat-panel-enter');
+  }
+
+  function closePanel() {
+    chatPanel?.classList.add('hidden');
+    chatPanel?.classList.remove('chat-panel-enter');
+  }
+
+  chatBubble?.addEventListener('click', () => {
+    if (chatPanel?.classList.contains('hidden')) {
+      openPanel();
+    } else {
+      closePanel();
+    }
+  });
+
+  chatClose?.addEventListener('click', closePanel);
+
+  // Close on click outside
+  document.addEventListener('click', (e) => {
+    const target = e.target as Node;
+    if (!chatPanel?.contains(target) && !chatBubble?.contains(target)) {
+      closePanel();
+    }
+  });
+
+  // Form submission
+  chatForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const name = chatName?.value || '';
+    const phone = chatPhone?.value || '';
+
+    // Create mailto link
+    const subject = encodeURIComponent(`New Contact Request from ${name}`);
+    const body = encodeURIComponent(`Name: ${name}\nPhone: ${phone}\n\nPlease contact me about travel packages.`);
+    const mailtoLink = `mailto:tranquiltrailtravels@gmail.com?subject=${subject}&body=${body}`;
+
+    // Open mailto link
+    window.location.href = mailtoLink;
+
+    // Show success message
+    chatForm?.classList.add('hidden');
+    chatSuccess?.classList.remove('hidden');
+
+    // Reset form after delay
+    setTimeout(() => {
+      chatForm?.reset();
+      chatForm?.classList.remove('hidden');
+      chatSuccess?.classList.add('hidden');
+    }, 5000);
+  });
+</script>
