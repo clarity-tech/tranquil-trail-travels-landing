@@ -7,6 +7,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { getCollection, render } from 'astro:content';
 import { siteConfig } from '../../data/site';
+import { unsplashSrcset } from '../../utils/image';
 
 export async function getStaticPaths() {
   const destinations = await getCollection('destinations');
@@ -34,14 +35,15 @@ const {
   seo,
 } = entry.data;
 
-function unsplashSrcset(baseUrl: string, widths: number[]): string {
-  return widths
-    .map((w) => {
-      const url = baseUrl.replace(/w=\d+/, `w=${w}`);
-      return `${url} ${w}w`;
-    })
-    .join(', ');
-}
+// Fetch sub-destinations for this state
+const allSubDestinations = await getCollection('subDestinations');
+const subDestinations = allSubDestinations
+  .filter(sub => sub.data.parentState === entry.id)
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0))
+  .map(sub => ({
+    ...sub,
+    slug: sub.id.replace(/^[^/]+\//, ''),
+  }));
 
 const whatsappNumber = '919531189920';
 const whatsappMessage = encodeURIComponent(`Hello! I'm interested in traveling to ${state}. Could we schedule a consultation to plan my journey?`);
@@ -338,6 +340,63 @@ const faqSchema = {
                   {item.description}
                 </p>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Explore Deeper: Sub-destination cards -->
+    {subDestinations.length > 0 && (
+      <section class="py-20 md:py-28 bg-white" aria-label="Explore destinations">
+        <div class="container max-w-6xl px-6 mx-auto">
+          <div class="text-center mb-16">
+            <p class="chapter-number mb-4 animate-on-scroll">Explore Deeper</p>
+            <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+            <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium animate-on-scroll delay-200">
+              Destinations in {state}
+            </h2>
+          </div>
+
+          <div class="grid gap-6 md:gap-8 sm:grid-cols-2">
+            {subDestinations.map((sub, i) => (
+              <a
+                href={`/destinations/${sub.data.parentState}/${sub.slug}/`}
+                class="group block overflow-hidden border border-stone-200 bg-white animate-on-scroll"
+                style={`transition-delay: ${i * 100}ms`}
+              >
+                {sub.data.heroImage ? (
+                  <div class="overflow-hidden">
+                    <img
+                      src={sub.data.heroImage}
+                      srcset={unsplashSrcset(sub.data.heroImage, [480, 768, 960])}
+                      sizes="(min-width: 640px) 50vw, 100vw"
+                      alt={sub.data.title}
+                      class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+                      width="960"
+                      height="480"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                ) : (
+                  <div class="w-full h-48 bg-gradient-to-br from-stone-200 to-stone-300 flex items-center justify-center">
+                    <span class="font-playfair text-stone-400 text-xl">{sub.data.title}</span>
+                  </div>
+                )}
+                <div class="p-6">
+                  <h3 class="font-playfair text-xl text-stone-900 font-medium group-hover:text-amber-600 transition-colors">
+                    {sub.data.title}
+                  </h3>
+                  <p class="mt-2 text-stone-500 text-sm italic">{sub.data.tagline}</p>
+                  <div class="mt-4 inline-flex items-center gap-2 text-amber-600 text-sm font-medium">
+                    <span>Explore</span>
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                  </div>
+                </div>
+              </a>
             ))}
           </div>
         </div>

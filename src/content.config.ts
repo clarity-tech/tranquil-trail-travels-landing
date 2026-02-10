@@ -77,4 +77,48 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { destinations, blog };
+const subDestinations = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/sub-destinations" }),
+  schema: z.object({
+    title: z.string(),
+    parentState: z.string(),
+    parentStateName: z.string(),
+    tagline: z.string(),
+    description: z.string(),
+    heroImage: z.string().optional(),
+    highlights: z.array(
+      z.object({
+        title: z.string(),
+        description: z.string(),
+        icon: z.string().optional(),
+      })
+    ),
+    practicalInfo: z.object({
+      howToReach: z.string(),
+      bestTime: z.string(),
+      entryFee: z.string().optional(),
+      recommendedDuration: z.string(),
+    }),
+    gallery: z
+      .array(
+        z.object({
+          image: z.string(),
+          caption: z.string(),
+        })
+      )
+      .optional(),
+    faqs: z.array(
+      z.object({
+        question: z.string(),
+        answer: z.string(),
+      })
+    ),
+    seo: z.object({
+      metaTitle: z.string(),
+      metaDescription: z.string(),
+    }),
+    order: z.number().default(0),
+  }),
+});
+
+export const collections = { destinations, blog, subDestinations };
