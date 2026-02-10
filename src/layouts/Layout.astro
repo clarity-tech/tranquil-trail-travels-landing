@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import ChatWidget from '../components/ChatWidget.astro';
+import { siteConfig } from '../data/site';
 
 interface Props {
 	title: string;
@@ -11,7 +12,7 @@ interface Props {
 
 const {
 	title,
-	description = 'Premium customized travel itineraries for Northeast India — Assam, Arunachal Pradesh, Meghalaya & Nagaland. Luxury journeys crafted for the discerning traveler.',
+	description = siteConfig.description,
 	ogImage = '/og-image.jpg',
 	canonicalUrl,
 } = Astro.props;
@@ -41,7 +42,7 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:image" content={ogImageUrl} />
-		<meta property="og:site_name" content="Tranquil Trail Travels" />
+		<meta property="og:site_name" content={siteConfig.name} />
 		<meta property="og:locale" content="en_IN" />
 
 		<!-- Twitter Card -->
@@ -54,18 +55,11 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
 		<script type="application/ld+json" set:html={JSON.stringify({
 			"@context": "https://schema.org",
 			"@type": "TravelAgency",
-			"name": "Tranquil Trail Travels",
-			"url": "https://tranquiltrailtravels.com",
-			"description": "Premium customized travel itineraries for Northeast India — Assam, Arunachal Pradesh, Meghalaya & Nagaland.",
-			"areaServed": [
-				{ "@type": "State", "name": "Assam" },
-				{ "@type": "State", "name": "Arunachal Pradesh" },
-				{ "@type": "State", "name": "Meghalaya" },
-				{ "@type": "State", "name": "Nagaland" }
-			],
-			"sameAs": [
-				"https://www.instagram.com/tranquil_trail_travels"
-			]
+			"name": siteConfig.name,
+			"url": siteConfig.url,
+			"description": siteConfig.description,
+			"areaServed": siteConfig.destinations.map(d => ({ "@type": "State", "name": d.state })),
+			"sameAs": [siteConfig.contact.instagram]
 		})} />
 
 		<!-- Google Fonts: Playfair Display + Inter (optimized weights) -->
