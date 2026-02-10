@@ -10,42 +10,49 @@ const states = [
     tagline: "The Heartland",
     description: "Where one-horned rhinos roam Kaziranga's grasslands and Majuli's river island holds the world's oldest traditions.",
     cx: 250, cy: 210,
+    href: "/destinations/assam/",
   },
   {
     name: "Arunachal Pradesh",
     tagline: "Land of the Dawn-Lit Mountains",
     description: "Tawang's ancient monasteries float above clouds, and Mechuka's hidden valleys await the intrepid.",
     cx: 380, cy: 80,
+    href: "/destinations/arunachal-pradesh/",
   },
   {
     name: "Meghalaya",
     tagline: "Abode of Clouds",
     description: "Living root bridges woven by generations, and the cleanest village in Asia nestled in rolling hills.",
     cx: 160, cy: 280,
+    href: "/destinations/meghalaya/",
   },
   {
     name: "Nagaland",
     tagline: "Land of Festivals",
     description: "Konyak warrior heritage in Mon, and the legendary Dzukou Valley's seasonal carpet of wildflowers.",
     cx: 440, cy: 200,
+    href: "/destinations/nagaland/",
   },
   {
     name: "Manipur",
     tagline: "Jewel of India",
     description: "Loktak's floating islands and a classical dance tradition that has enchanted the world.",
     cx: 430, cy: 320,
+    href: null,
   },
   {
     name: "Mizoram",
     tagline: "Land of the Highlanders",
     description: "Blue mountains draped in bamboo groves, and a culture rich with song and community.",
     cx: 390, cy: 420,
+    href: null,
   },
   {
     name: "Tripura",
     tagline: "Land of Fourteen Gods",
     description: "Ancient royal palaces meet sacred Neermahal, a water palace rising from Rudrasagar Lake.",
     cx: 240, cy: 400,
+    href: null,
   },
 ];
 
@@ -70,6 +77,10 @@ const connections = [
       <p class="mt-6 text-stone-400 text-lg max-w-2xl mx-auto chapter-reveal delay-300">
         Seven states, each a world unto itself. Together, they form India's most extraordinary frontier.
       </p>
+      <a href="/destinations/" class="inline-flex items-center gap-2 mt-8 text-amber-500 hover:text-amber-400 transition-colors text-sm tracking-wide chapter-reveal delay-400">
+        View all destinations
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+      </a>
     </div>
 
     <!-- Map + Details layout -->
@@ -120,17 +131,39 @@ const connections = [
 
       <!-- State descriptions (scrollable list) -->
       <div class="space-y-8" role="list" aria-label="Northeast Indian states">
-        {states.map((state, i) => (
-          <div
-            class="chapter-reveal border-l-2 border-amber-600/30 pl-6 hover:border-amber-500 transition-colors"
-            style={`transition-delay: ${i * 100}ms`}
-            role="listitem"
-          >
-            <h3 class="font-playfair text-xl md:text-2xl text-white font-medium">{state.name}</h3>
-            <p class="text-amber-500 text-sm tracking-wide mt-1">{state.tagline}</p>
-            <p class="text-stone-400 mt-3 leading-relaxed">{state.description}</p>
-          </div>
-        ))}
+        {states.map((state, i) => {
+          const inner = (
+            <>
+              <h3 class="font-playfair text-xl md:text-2xl text-white font-medium">{state.name}</h3>
+              <p class="text-amber-500 text-sm tracking-wide mt-1">{state.tagline}</p>
+              <p class="text-stone-400 mt-3 leading-relaxed">{state.description}</p>
+              {state.href && (
+                <span class="inline-flex items-center gap-1.5 text-amber-500 text-sm mt-3 group-hover:gap-2.5 transition-all">
+                  Explore <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </span>
+              )}
+            </>
+          );
+
+          return state.href ? (
+            <a
+              href={state.href}
+              class="group block chapter-reveal border-l-2 border-amber-600/30 pl-6 hover:border-amber-500 transition-colors"
+              style={`transition-delay: ${i * 100}ms`}
+              role="listitem"
+            >
+              {inner}
+            </a>
+          ) : (
+            <div
+              class="chapter-reveal border-l-2 border-amber-600/30 pl-6 hover:border-amber-500 transition-colors"
+              style={`transition-delay: ${i * 100}ms`}
+              role="listitem"
+            >
+              {inner}
+            </div>
+          );
+        })}
       </div>
     </div>
   </div>

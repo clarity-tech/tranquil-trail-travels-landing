@@ -1,0 +1,489 @@
+---
+/**
+ * Dynamic Destination Page — /destinations/[id]/
+ * Renders a full destination page with hero, content, highlights,
+ * experiences, itineraries, FAQ, and CTA sections.
+ */
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+import { siteConfig } from '../../data/site';
+
+export async function getStaticPaths() {
+  const destinations = await getCollection('destinations');
+  return destinations.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const {
+  title,
+  state,
+  tagline,
+  description,
+  heroImage,
+  bestTimeToVisit,
+  highlights,
+  topExperiences,
+  culturalHighlights,
+  sampleItineraries,
+  faqs,
+  seo,
+} = entry.data;
+
+const whatsappNumber = '919531189920';
+const whatsappMessage = encodeURIComponent(`Hello! I'm interested in traveling to ${state}. Could we schedule a consultation to plan my journey?`);
+const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+
+const canonical = new URL(`/destinations/${entry.id}/`, siteConfig.url).href;
+
+// Structured Data
+const touristDestinationSchema = {
+  "@context": "https://schema.org",
+  "@type": "TouristDestination",
+  "name": state,
+  "description": description,
+  "touristType": "Adventure traveler",
+  "url": canonical,
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": siteConfig.url,
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Destinations",
+      "item": `${siteConfig.url}/destinations/`,
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": state,
+      "item": canonical,
+    },
+  ],
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map((faq) => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer,
+    },
+  })),
+};
+---
+
+<Layout
+  title={`${state} — Tranquil Trail Travels`}
+  seoTitle={seo.metaTitle}
+  seoDescription={seo.metaDescription}
+  canonicalUrl={canonical}
+>
+  <!-- Structured Data -->
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(touristDestinationSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  </Fragment>
+
+  <main>
+    <!-- Breadcrumbs -->
+    <nav class="bg-white border-b border-stone-200" aria-label="Breadcrumb">
+      <div class="container max-w-6xl mx-auto px-6 py-4">
+        <ol class="flex items-center gap-2 text-sm text-stone-500">
+          <li>
+            <a href="/" class="hover:text-amber-600 transition-colors">Home</a>
+          </li>
+          <li aria-hidden="true">
+            <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </li>
+          <li>
+            <a href="/destinations/" class="hover:text-amber-600 transition-colors">Destinations</a>
+          </li>
+          <li aria-hidden="true">
+            <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </li>
+          <li>
+            <span class="text-stone-800 font-medium" aria-current="page">{state}</span>
+          </li>
+        </ol>
+      </div>
+    </nav>
+
+    <!-- a. Hero Section -->
+    <section class="relative py-28 md:py-40 overflow-hidden" aria-label={`${state} destination hero`}>
+      <!-- Background -->
+      <div class="absolute inset-0 bg-gradient-to-br from-stone-900 via-stone-800 to-amber-950"></div>
+
+      <!-- Hero image if available -->
+      {heroImage && (
+        <div class="absolute inset-0">
+          <img
+            src={heroImage}
+            alt={`${state} landscape`}
+            class="w-full h-full object-cover"
+            loading="eager"
+            decoding="async"
+          />
+          <div class="absolute inset-0 bg-gradient-to-b from-stone-900/80 via-stone-900/60 to-stone-900/90"></div>
+        </div>
+      )}
+
+      <!-- Subtle texture -->
+      <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+
+      <!-- Warm glow accents -->
+      <div class="absolute top-0 right-0 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl"></div>
+
+      <div class="relative z-10 container max-w-4xl px-6 mx-auto text-center">
+        <p class="chapter-number mb-4 animate-fade-in" style="animation-delay: 0.2s;">Destination</p>
+        <div class="chapter-divider mb-10 animate-fade-in" style="animation-delay: 0.4s;"></div>
+
+        <h1 class="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold text-white leading-tight animate-fade-in-up" style="animation-delay: 0.6s;">
+          {state}
+        </h1>
+
+        <p class="mt-6 text-stone-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style="animation-delay: 0.9s;">
+          {tagline}
+        </p>
+
+        <!-- Best time to visit badge -->
+        <div class="mt-10 animate-fade-in-up" style="animation-delay: 1.2s;">
+          <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 px-6 py-3 rounded-sm">
+            <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <div class="text-left">
+              <p class="text-white text-sm font-medium">Best Time to Visit</p>
+              <p class="text-stone-300 text-sm">{bestTimeToVisit.months} &mdash; {bestTimeToVisit.note}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- b. Intro: Rendered markdown body -->
+    <section class="py-20 md:py-28 bg-white" aria-label={`About ${state}`}>
+      <div class="container max-w-3xl px-6 mx-auto">
+        <div class="prose prose-lg prose-stone prose-headings:font-playfair prose-headings:font-medium prose-a:text-amber-600 hover:prose-a:text-amber-700 max-w-none chapter-reveal">
+          <Content />
+        </div>
+      </div>
+    </section>
+
+    <!-- c. Highlights Grid -->
+    {highlights.length > 0 && (
+      <section class="py-20 md:py-28 bg-stone-50" aria-label="Destination highlights">
+        <div class="container max-w-6xl px-6 mx-auto">
+          <div class="text-center mb-16">
+            <p class="chapter-number mb-4 animate-on-scroll">Highlights</p>
+            <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+            <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium animate-on-scroll delay-200">
+              What Awaits in {state}
+            </h2>
+          </div>
+
+          <div class="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {highlights.map((highlight, i) => (
+              <div
+                class="bg-white border border-stone-200 p-8 animate-on-scroll"
+                style={`transition-delay: ${i * 100}ms`}
+              >
+                {highlight.icon && (
+                  <span class="text-3xl mb-4 block" aria-hidden="true">{highlight.icon}</span>
+                )}
+                <h3 class="font-playfair text-xl text-stone-900 font-medium">
+                  {highlight.title}
+                </h3>
+                <p class="mt-3 text-stone-600 leading-relaxed">
+                  {highlight.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- d. Top Experiences (alternating image-text, CulturalMoments pattern) -->
+    {topExperiences.length > 0 && (
+      <section class="py-20 md:py-28 bg-white" aria-label="Top experiences">
+        <div class="container max-w-6xl px-6 mx-auto">
+          <div class="text-center mb-20">
+            <p class="chapter-number mb-4 animate-on-scroll">Experiences</p>
+            <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+            <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium animate-on-scroll delay-200">
+              Moments That Define {state}
+            </h2>
+          </div>
+
+          <div class="space-y-20 md:space-y-28">
+            {topExperiences.map((experience, i) => (
+              <div class={`grid md:grid-cols-2 gap-10 md:gap-16 items-center`}>
+                {/* Image */}
+                <div class={`overflow-hidden rounded-sm ${i % 2 === 1 ? 'md:order-2' : ''} ${i % 2 === 0 ? 'slide-left' : 'slide-right'}`} style={`transition-delay: 100ms`}>
+                  {experience.image ? (
+                    <img
+                      src={experience.image}
+                      alt={experience.title}
+                      class="w-full h-72 md:h-96 object-cover image-zoom"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div class="w-full h-72 md:h-96 bg-gradient-to-br from-stone-200 to-stone-300 flex items-center justify-center">
+                      <span class="font-playfair text-stone-400 text-xl">{experience.title}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Text */}
+                <div class={`${i % 2 === 1 ? 'md:order-1 md:text-right' : ''}`}>
+                  <p class="text-amber-600 text-sm tracking-widest uppercase mb-3 animate-on-scroll" style="transition-delay: 200ms">
+                    {experience.location}
+                  </p>
+                  <h3 class="font-playfair text-2xl md:text-3xl text-stone-900 font-medium animate-on-scroll" style="transition-delay: 300ms">
+                    {experience.title}
+                  </h3>
+                  <p class="mt-4 text-stone-600 leading-relaxed text-lg animate-on-scroll" style="transition-delay: 400ms">
+                    {experience.description}
+                  </p>
+                  <div class={`w-12 h-px bg-amber-600/40 mt-6 animate-on-scroll ${i % 2 === 1 ? 'md:ml-auto' : ''}`} style="transition-delay: 500ms"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- e. Cultural Highlights -->
+    {culturalHighlights.length > 0 && (
+      <section class="py-20 md:py-28 bg-stone-50" aria-label="Cultural highlights">
+        <div class="container max-w-6xl px-6 mx-auto">
+          <div class="text-center mb-16">
+            <p class="chapter-number mb-4 animate-on-scroll">Culture</p>
+            <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+            <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium animate-on-scroll delay-200">
+              Cultural Threads
+            </h2>
+          </div>
+
+          <div class="grid gap-6 md:gap-8 sm:grid-cols-2">
+            {culturalHighlights.map((item, i) => (
+              <div
+                class="relative bg-white border-l-4 border-amber-600 p-8 md:p-10 animate-on-scroll"
+                style={`transition-delay: ${i * 100}ms`}
+              >
+                <h3 class="font-playfair text-xl text-stone-900 font-medium">
+                  {item.title}
+                </h3>
+                <p class="mt-3 text-stone-600 leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- f. Sample Itineraries -->
+    {sampleItineraries.length > 0 && (
+      <section class="py-20 md:py-28 bg-white" aria-label="Sample itineraries">
+        <div class="container max-w-6xl px-6 mx-auto">
+          <div class="text-center mb-16">
+            <p class="chapter-number mb-4 animate-on-scroll">Itineraries</p>
+            <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+            <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium animate-on-scroll delay-200">
+              Curated Journeys
+            </h2>
+            <p class="mt-6 text-stone-600 text-lg max-w-2xl mx-auto animate-on-scroll delay-300">
+              Each itinerary is a starting point. We customize every journey to your pace, interests, and travel style.
+            </p>
+          </div>
+
+          <div class="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {sampleItineraries.map((itinerary, i) => (
+              <div
+                class="bg-stone-50 border border-stone-200 p-8 flex flex-col animate-on-scroll"
+                style={`transition-delay: ${i * 100}ms`}
+              >
+                <!-- Duration badge -->
+                <div class="mb-4">
+                  <span class="inline-flex items-center gap-1.5 bg-amber-600/10 text-amber-700 text-sm font-medium px-3 py-1 rounded-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    {itinerary.duration}
+                  </span>
+                </div>
+
+                <h3 class="font-playfair text-xl text-stone-900 font-medium">
+                  {itinerary.title}
+                </h3>
+                <p class="mt-3 text-stone-600 leading-relaxed flex-grow">
+                  {itinerary.summary}
+                </p>
+
+                <!-- WhatsApp CTA -->
+                <a
+                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hello! I'm interested in the "${itinerary.title}" itinerary in ${state}. Could you share more details?`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-6 inline-flex items-center gap-2 text-amber-600 hover:text-amber-700 transition-colors text-sm font-medium group"
+                >
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                  </svg>
+                  <span>Enquire on WhatsApp</span>
+                  <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                  </svg>
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- g. FAQ Section (Accordion) -->
+    {faqs.length > 0 && (
+      <section class="py-20 md:py-28 bg-stone-50" aria-label="Frequently asked questions">
+        <div class="container max-w-3xl px-6 mx-auto">
+          <div class="text-center mb-16">
+            <p class="chapter-number mb-4 animate-on-scroll">FAQ</p>
+            <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+            <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium animate-on-scroll delay-200">
+              Common Questions
+            </h2>
+          </div>
+
+          <div class="space-y-4">
+            {faqs.map((faq, i) => (
+              <details
+                class="group bg-white border border-stone-200 animate-on-scroll"
+                style={`transition-delay: ${i * 80}ms`}
+              >
+                <summary class="flex items-center justify-between cursor-pointer p-6 md:p-8 list-none [&::-webkit-details-marker]:hidden">
+                  <h3 class="font-playfair text-lg text-stone-900 font-medium pr-4">
+                    {faq.question}
+                  </h3>
+                  <svg
+                    class="w-5 h-5 text-amber-600 flex-shrink-0 transform transition-transform duration-300 group-open:rotate-45"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                </summary>
+                <div class="px-6 pb-6 md:px-8 md:pb-8 -mt-2">
+                  <p class="text-stone-600 leading-relaxed">{faq.answer}</p>
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- h. CTA Section -->
+    <section class="relative py-24 md:py-36 overflow-hidden" aria-label="Begin your journey">
+      <!-- Background -->
+      <div class="absolute inset-0 bg-gradient-to-br from-stone-900 via-stone-800 to-amber-950"></div>
+
+      <!-- Subtle texture -->
+      <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+
+      <!-- Warm glow accents -->
+      <div class="absolute top-0 right-0 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl"></div>
+
+      <div class="relative z-10 container max-w-4xl px-6 mx-auto text-center">
+        <p class="chapter-number mb-4 chapter-reveal">Your Journey</p>
+        <div class="chapter-divider mb-10 chapter-reveal delay-100"></div>
+
+        <h2 class="font-playfair text-3xl sm:text-4xl md:text-5xl font-medium text-white leading-tight chapter-reveal delay-200">
+          Ready to Explore {state}?
+        </h2>
+
+        <p class="mt-8 text-stone-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed chapter-reveal delay-300">
+          Every journey begins with a conversation. Tell us what inspires you about {state} and we will craft an experience that is uniquely yours.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-5 mt-12 chapter-reveal delay-400">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="whatsapp-btn"
+            aria-label={`Start a consultation about ${state} on WhatsApp`}
+          >
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+            </svg>
+            <span>Start a Conversation</span>
+          </a>
+
+          <a
+            href={`mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(`Journey Inquiry — ${state}`)}`}
+            class="inline-flex items-center gap-3 px-8 py-4 border border-stone-500 text-stone-300 hover:border-amber-500 hover:text-amber-400 transition-all duration-300 text-base tracking-wide rounded-sm"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            <span>Write to Us</span>
+          </a>
+        </div>
+
+        <p class="mt-10 text-stone-500 text-sm chapter-reveal delay-500">
+          No obligation. No pressure. Just a conversation about extraordinary travel.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scroll Animation Controller -->
+  <script>
+    // Intersection Observer for scroll-triggered animations
+    const scrollObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    document.querySelectorAll('.animate-on-scroll, .chapter-reveal, .text-reveal, .scale-reveal, .slide-left, .slide-right').forEach(el => {
+      scrollObserver.observe(el);
+    });
+  </script>
+</Layout>

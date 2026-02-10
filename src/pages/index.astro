@@ -8,7 +8,7 @@ import ConsultationCTA from '../components/ConsultationCTA.astro';
 import { siteConfig } from '../data/site';
 ---
 
-<Layout title="Tranquil Trail Travels — Stories Written in Mist & Gold">
+<Layout title="Tranquil Trail Travels — Stories Written in Mist & Gold" fullScreenHero>
   <main>
     <!-- Chapter 1: At dawn in Kaziranga... -->
     <HeroDawn />
@@ -89,7 +89,8 @@ import { siteConfig } from '../data/site';
             <p class="font-playfair text-white text-xl">{siteConfig.name}</p>
             <p class="mt-1">{siteConfig.tagline}</p>
           </div>
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-4 md:gap-6">
+            <a href="/destinations/" class="text-sm text-stone-400 hover:text-amber-500 transition-colors">Destinations</a>
             <a
               href={siteConfig.contact.instagram}
               target="_blank"
