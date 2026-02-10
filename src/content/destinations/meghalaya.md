@@ -5,8 +5,8 @@ tagline: "The Abode of Clouds, Rooted in Living Stone"
 description: "Meghalaya is a realm sculpted by rain and patience — where waterfalls plunge a thousand feet into limestone gorges, rivers run so clear they seem to vanish, and ancient root bridges grown by human hands span jungle chasms. This is India's wettest state, and every drop has carved something beautiful."
 heroImage: ""
 bestTimeToVisit:
-  months: "October to May"
-  note: "Post-monsoon (October-November) offers lush green landscapes, swollen waterfalls, and comfortable temperatures. Winter (December-February) is crisp and ideal for trekking. Spring (March-May) brings wildflowers and clear skies. The monsoon (June-September) is dramatic but some trails close due to heavy rainfall."
+  months: "September to May"
+  note: "Post-monsoon (September-November) offers lush green landscapes, swollen waterfalls, and comfortable temperatures. Winter (December-February) is crisp and ideal for trekking. Spring (March-May) brings wildflowers and clear skies. The monsoon (June-August) is dramatic but some trails close due to heavy rainfall."
 highlights:
   - title: "Living Root Bridges"
     description: "Meghalaya's Khasi and Jaintia communities have spent centuries training the aerial roots of Ficus elastica trees across rivers and gorges, creating living bridges that grow stronger with age. The double-decker root bridge at Nongriat is a feat of bio-engineering found nowhere else on Earth."
