@@ -168,17 +168,14 @@ const faqSchema = {
           {tagline}
         </p>
 
-        <!-- Best time to visit -->
-        <div class="mt-12 animate-fade-in-up" style="animation-delay: 1.2s;">
-          <div class="max-w-md mx-auto bg-white/10 backdrop-blur-sm border border-white/20 px-8 py-6 rounded-sm text-center">
-            <div class="flex items-center justify-center gap-2 mb-3">
-              <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
-              <p class="text-stone-400 text-sm tracking-widest uppercase">Best Time to Visit</p>
-            </div>
-            <p class="font-playfair text-white text-xl md:text-2xl font-medium">{bestTimeToVisit.months}</p>
-            <p class="text-stone-300 text-base mt-2 leading-relaxed">{bestTimeToVisit.note}</p>
+        <!-- Best time to visit badge (compact in hero) -->
+        <div class="mt-10 animate-fade-in-up" style="animation-delay: 1.2s;">
+          <div class="inline-flex items-center gap-2.5 bg-white/10 backdrop-blur-sm border border-white/20 px-5 py-2.5 rounded-sm">
+            <svg class="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <span class="text-stone-400 text-sm">Best time:</span>
+            <span class="text-white text-sm font-medium">{bestTimeToVisit.months}</span>
           </div>
         </div>
       </div>
@@ -193,9 +190,22 @@ const faqSchema = {
       </div>
     </section>
 
+    <!-- When to visit (detailed seasonal guide) -->
+    <section class="py-14 md:py-20 bg-stone-50 border-y border-stone-200" aria-label="When to visit">
+      <div class="container max-w-4xl px-6 mx-auto flex flex-col md:flex-row md:items-start gap-6 md:gap-12">
+        <div class="flex items-center gap-3 md:flex-shrink-0">
+          <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <h2 class="font-playfair text-xl text-stone-900 font-medium whitespace-nowrap">When to Visit</h2>
+        </div>
+        <p class="text-stone-600 leading-relaxed">{bestTimeToVisit.note}</p>
+      </div>
+    </section>
+
     <!-- c. Highlights Grid -->
     {highlights.length > 0 && (
-      <section class="py-20 md:py-28 bg-stone-50" aria-label="Destination highlights">
+      <section class="py-20 md:py-28 bg-white" aria-label="Destination highlights">
         <div class="container max-w-6xl px-6 mx-auto">
           <div class="text-center mb-16">
             <p class="chapter-number mb-4 animate-on-scroll">Highlights</p>
