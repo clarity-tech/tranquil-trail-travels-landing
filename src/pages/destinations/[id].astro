@@ -168,16 +168,17 @@ const faqSchema = {
           {tagline}
         </p>
 
-        <!-- Best time to visit badge -->
-        <div class="mt-10 animate-fade-in-up" style="animation-delay: 1.2s;">
-          <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 px-6 py-3 rounded-sm">
-            <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-            <div class="text-left">
-              <p class="text-white text-sm font-medium">Best Time to Visit</p>
-              <p class="text-stone-300 text-sm">{bestTimeToVisit.months} &mdash; {bestTimeToVisit.note}</p>
+        <!-- Best time to visit -->
+        <div class="mt-12 animate-fade-in-up" style="animation-delay: 1.2s;">
+          <div class="max-w-md mx-auto bg-white/10 backdrop-blur-sm border border-white/20 px-8 py-6 rounded-sm text-center">
+            <div class="flex items-center justify-center gap-2 mb-3">
+              <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <p class="text-stone-400 text-sm tracking-widest uppercase">Best Time to Visit</p>
             </div>
+            <p class="font-playfair text-white text-xl md:text-2xl font-medium">{bestTimeToVisit.months}</p>
+            <p class="text-stone-300 text-base mt-2 leading-relaxed">{bestTimeToVisit.note}</p>
           </div>
         </div>
       </div>
