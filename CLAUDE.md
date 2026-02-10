@@ -11,9 +11,11 @@
 
 ## Current Site Structure
 - `/` - Homepage with 5-chapter storytelling narrative
+- `/destinations/` - Hub page linking to 4 state-level destination pages
+- `/destinations/[id]/` - Dynamic destination pages (Assam, Arunachal Pradesh, Meghalaya, Nagaland) with hero, highlights, experiences, itineraries, FAQ, CTA sections
 - `/llms.txt` - AI crawler discoverability endpoint
-- No blog, no destination pages yet (only a single-page landing site)
-- All content is hardcoded in components (no Astro Content Collections yet)
+- Content uses Astro Content Collections (`src/content/destinations/*.md`)
+- Images: Unsplash hotlinked with responsive `srcset` via `unsplashSrcset()` helper in `[id].astro`
 
 ## Key Competitor
 - **ChaloHoppo** (https://chalohoppo.com) - WordPress/Elementor site
@@ -24,11 +26,11 @@
 ## Growth Plan
 Full plan is in `GROWTH-PLAN.md`. Implementation order:
 
-1. **Phase 1**: Set up Astro Content Collections + 4 priority destination pages (Assam, Arunachal Pradesh, Meghalaya, Nagaland) + destinations hub page
+1. ~~**Phase 1**: Set up Astro Content Collections + 4 priority destination pages + destinations hub page~~ **DONE**
 2. **Phase 2**: Sub-destination pages (Kaziranga, Tawang, Cherrapunji, etc.) - competitive edge over ChaloHoppo
 3. **Phase 3**: Blog system + 20 posts in first 3 months (content calendar in GROWTH-PLAN.md)
-4. **Phase 4**: Structured data (TouristDestination, FAQ, Breadcrumbs schema)
-5. **Phase 5**: Social sharing, OG images, content repurposing
+4. ~~**Phase 4**: Structured data (TouristDestination, FAQ, Breadcrumbs schema)~~ **DONE** — all destination pages have TouristDestination, FAQPage, and BreadcrumbList schemas
+5. **Phase 5**: Social sharing, OG images, content repurposing — **PARTIAL** (destination pages have dynamic OG images via Unsplash; still need OG image generation for other pages)
 6. **Phase 6**: Lead capture (trip customizer form, newsletter)
 
 ## Technical Notes
