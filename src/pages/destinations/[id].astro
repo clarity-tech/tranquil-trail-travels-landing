@@ -34,11 +34,24 @@ const {
   seo,
 } = entry.data;
 
+function unsplashSrcset(baseUrl: string, widths: number[]): string {
+  return widths
+    .map((w) => {
+      const url = baseUrl.replace(/w=\d+/, `w=${w}`);
+      return `${url} ${w}w`;
+    })
+    .join(', ');
+}
+
 const whatsappNumber = '919531189920';
 const whatsappMessage = encodeURIComponent(`Hello! I'm interested in traveling to ${state}. Could we schedule a consultation to plan my journey?`);
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
 const canonical = new URL(`/destinations/${entry.id}/`, siteConfig.url).href;
+
+const ogImageUrl = heroImage
+  ? heroImage.replace(/w=\d+/, 'w=1200').replace(/q=\d+/, 'q=80')
+  : undefined;
 
 // Structured Data
 const touristDestinationSchema = {
@@ -48,6 +61,7 @@ const touristDestinationSchema = {
   "description": description,
   "touristType": "Adventure traveler",
   "url": canonical,
+  ...(heroImage ? { "image": heroImage } : {}),
 };
 
 const breadcrumbSchema = {
@@ -94,6 +108,7 @@ const faqSchema = {
   seoTitle={seo.metaTitle}
   seoDescription={seo.metaDescription}
   canonicalUrl={canonical}
+  ogImage={ogImageUrl}
 >
   <!-- Structured Data -->
   <Fragment slot="head">
@@ -140,10 +155,15 @@ const faqSchema = {
         <div class="absolute inset-0">
           <img
             src={heroImage}
+            srcset={unsplashSrcset(heroImage, [640, 1024, 1400, 1920])}
+            sizes="100vw"
             alt={`${state} landscape`}
             class="w-full h-full object-cover"
+            width="1920"
+            height="1080"
             loading="eager"
             decoding="async"
+            fetchpriority="high"
           />
           <div class="absolute inset-0 bg-gradient-to-b from-stone-900/80 via-stone-900/60 to-stone-900/90"></div>
         </div>
@@ -257,8 +277,12 @@ const faqSchema = {
                   {experience.image ? (
                     <img
                       src={experience.image}
+                      srcset={unsplashSrcset(experience.image, [480, 768, 960])}
+                      sizes="(min-width: 768px) 50vw, 100vw"
                       alt={experience.title}
                       class="w-full h-72 md:h-96 object-cover image-zoom"
+                      width="960"
+                      height="640"
                       loading="lazy"
                       decoding="async"
                     />
