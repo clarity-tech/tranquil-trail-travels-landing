@@ -1,0 +1,67 @@
+---
+/**
+ * Chapter 1: "At dawn in Kaziranga..."
+ * Full-viewport hero with dawn gradient, parallax background, and progressive text reveal.
+ */
+---
+
+<section class="relative min-h-screen overflow-hidden" aria-label="Welcome to Tranquil Trail Travels">
+  <!-- Dawn gradient overlay -->
+  <div class="absolute inset-0 bg-gradient-to-b from-stone-900/90 via-stone-900/60 to-amber-950/80 z-[1]"></div>
+
+  <!-- Parallax background image -->
+  <div class="parallax-container absolute inset-0">
+    <img
+      src="https://placehold.co/1920x1080/1c1917/d97706?text=Kaziranga+Dawn"
+      alt="Misty dawn breaking over Kaziranga National Park with silhouettes of one-horned rhinos"
+      class="parallax-bg object-cover w-full h-full"
+      loading="eager"
+      decoding="async"
+    />
+  </div>
+
+  <!-- Dawn warmth overlay (animated) -->
+  <div class="absolute inset-0 bg-gradient-to-tr from-amber-900/30 via-transparent to-rose-900/20 z-[2]" style="animation: dawnShift 8s ease-in-out infinite;"></div>
+
+  <!-- Content -->
+  <div class="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-6 py-20">
+    <!-- Chapter indicator -->
+    <p class="chapter-number mb-8 animate-fade-in" style="animation-delay: 0.3s;">Chapter One</p>
+
+    <!-- Opening narrative -->
+    <p class="text-amber-300/90 text-lg md:text-xl font-light italic max-w-2xl animate-fade-in" style="animation-delay: 0.6s;">
+      At dawn in Kaziranga, the mist lifts slowly&hellip;
+    </p>
+
+    <!-- Main headline -->
+    <h1 class="font-playfair text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tight text-white max-w-5xl mt-6 animate-fade-in-up" style="animation-delay: 1s;">
+      Stories Written <br class="hidden sm:block" />in Mist &amp; Gold
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="mt-8 text-lg md:text-xl max-w-2xl text-stone-200/90 font-light leading-relaxed animate-fade-in-up" style="animation-delay: 1.4s;">
+      Northeast India reveals itself to those who arrive with curiosity and leave with stories.
+      We craft the journey. You write the chapter.
+    </p>
+
+    <!-- CTA hint -->
+    <div class="mt-12 animate-fade-in-up" style="animation-delay: 1.8s;">
+      <a
+        href="#seven-sisters"
+        class="inline-flex items-center gap-3 text-amber-400 hover:text-amber-300 transition-colors text-base tracking-wide group"
+      >
+        <span>Begin the journey</span>
+        <svg class="w-4 h-4 transform group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 scroll-indicator">
+    <svg class="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+    </svg>
+  </div>
+</section>

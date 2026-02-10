@@ -1,0 +1,84 @@
+---
+/**
+ * Chapter 3: Cultural Authenticity Moments
+ * Showcases authentic cultural experiences that set this travel agency apart.
+ */
+const moments = [
+  {
+    title: "Tea Garden Mornings",
+    location: "Upper Assam",
+    description: "Walk through mist-laden tea gardens at sunrise with fourth-generation planters. Taste the first flush, still warm from the pan.",
+    image: "https://placehold.co/800x600/44403c/d97706?text=Tea+Gardens",
+    alt: "Sunrise over tea gardens in Upper Assam with morning mist",
+  },
+  {
+    title: "Monastery Silences",
+    location: "Tawang, Arunachal Pradesh",
+    description: "Sit with monks in the 400-year-old Tawang Monastery as dawn prayers echo through Himalayan corridors.",
+    image: "https://placehold.co/800x600/57534e/d97706?text=Tawang+Monastery",
+    alt: "Monks in prayer at the ancient Tawang Monastery at dawn",
+  },
+  {
+    title: "Tribal Feasts",
+    location: "Mon, Nagaland",
+    description: "Share a meal prepared in bamboo with the Konyak people — a feast that tells stories of generations.",
+    image: "https://placehold.co/800x600/78716c/d97706?text=Tribal+Feast",
+    alt: "Traditional Konyak tribal feast served in bamboo containers",
+  },
+  {
+    title: "Living Root Bridges",
+    location: "Cherrapunji, Meghalaya",
+    description: "Cross bridges grown over centuries by Khasi communities — living architecture woven from fig tree roots.",
+    image: "https://placehold.co/800x600/a8a29e/d97706?text=Root+Bridges",
+    alt: "Ancient living root bridge in the forests of Cherrapunji, Meghalaya",
+  },
+];
+---
+
+<section class="py-24 md:py-36 bg-white" aria-label="Cultural experiences">
+  <div class="container max-w-6xl px-6 mx-auto">
+    <!-- Chapter header -->
+    <div class="text-center mb-20">
+      <p class="chapter-number mb-4 animate-on-scroll">Chapter Three</p>
+      <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+      <h2 class="font-playfair text-3xl sm:text-4xl md:text-5xl text-stone-900 font-medium animate-on-scroll delay-200">
+        Moments That Stay
+      </h2>
+      <p class="mt-6 text-stone-600 text-lg max-w-2xl mx-auto animate-on-scroll delay-300">
+        We don't offer tours. We open doors to experiences you'll carry home in your heart.
+      </p>
+    </div>
+
+    <!-- Cultural moments grid -->
+    <div class="space-y-20 md:space-y-28">
+      {moments.map((moment, i) => (
+        <div class={`grid md:grid-cols-2 gap-10 md:gap-16 items-center ${i % 2 === 1 ? 'md:direction-rtl' : ''}`}>
+          {/* Image */}
+          <div class={`parallax-container rounded-sm overflow-hidden ${i % 2 === 1 ? 'md:order-2' : ''} ${i % 2 === 0 ? 'slide-left' : 'slide-right'}`} style={`transition-delay: ${100}ms`}>
+            <img
+              src={moment.image}
+              alt={moment.alt}
+              class="w-full h-72 md:h-96 object-cover image-zoom"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          {/* Text */}
+          <div class={`${i % 2 === 1 ? 'md:order-1 md:text-right' : ''}`}>
+            <p class={`text-amber-600 text-sm tracking-widest uppercase mb-3 animate-on-scroll`} style={`transition-delay: ${200}ms`}>
+              {moment.location}
+            </p>
+            <h3 class={`font-playfair text-2xl md:text-3xl text-stone-900 font-medium animate-on-scroll`} style={`transition-delay: ${300}ms`}>
+              {moment.title}
+            </h3>
+            <p class={`mt-4 text-stone-600 leading-relaxed text-lg animate-on-scroll`} style={`transition-delay: ${400}ms`}>
+              {moment.description}
+            </p>
+            <div class={`w-12 h-px bg-amber-600/40 mt-6 animate-on-scroll ${i % 2 === 1 ? 'md:ml-auto' : ''}`} style={`transition-delay: ${500}ms`}></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

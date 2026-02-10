@@ -1,0 +1,76 @@
+---
+/**
+ * Chapter 4: Unique Experiences
+ * Highlights extraordinary destinations — Majuli, Dzukou Valley, etc.
+ */
+const experiences = [
+  {
+    title: "Majuli Island",
+    subtitle: "World's Largest River Island",
+    description: "Drift to Majuli on a ferry across the Brahmaputra. Here, Vaishnavite monasteries called Satras have preserved 500-year-old dance, theatre, and mask-making traditions. Watch artisans shape sacred masks as time moves at the river's pace.",
+    image: "https://placehold.co/900x600/292524/d97706?text=Majuli+Island",
+    alt: "Majuli Island on the Brahmaputra River at golden hour",
+    accent: "amber",
+  },
+  {
+    title: "Dzukou Valley",
+    subtitle: "Valley of Flowers of the East",
+    description: "Trek through ancient Naga trails to reach Dzukou — a high-altitude valley that bursts into carpets of lilies and rhododendrons each season. At 2,452 metres, this is where the earth touches the sky.",
+    image: "https://placehold.co/900x600/44403c/d97706?text=Dzukou+Valley",
+    alt: "Panoramic view of Dzukou Valley carpeted with wildflowers",
+    accent: "emerald",
+  },
+  {
+    title: "Ziro Valley",
+    subtitle: "UNESCO World Heritage Landscape",
+    description: "The Apatani people of Ziro have practiced sustainable rice-fish farming for centuries in a landscape so pristine, UNESCO protects it. Walk paddy bunds, meet elders with traditional facial tattoos, and taste rice beer made from ancient recipes.",
+    image: "https://placehold.co/900x600/57534e/d97706?text=Ziro+Valley",
+    alt: "Terraced rice paddies of Ziro Valley with the Apatani landscape",
+    accent: "teal",
+  },
+];
+---
+
+<section class="py-24 md:py-36 bg-stone-50" aria-label="Unique destinations">
+  <div class="container max-w-6xl px-6 mx-auto">
+    <!-- Chapter header -->
+    <div class="text-center mb-20">
+      <p class="chapter-number mb-4 animate-on-scroll">Chapter Four</p>
+      <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+      <h2 class="font-playfair text-3xl sm:text-4xl md:text-5xl text-stone-900 font-medium animate-on-scroll delay-200">
+        Beyond the Ordinary
+      </h2>
+      <p class="mt-6 text-stone-600 text-lg max-w-2xl mx-auto animate-on-scroll delay-300">
+        Places that exist in the space between legend and reality. Destinations most travelers never reach.
+      </p>
+    </div>
+
+    <!-- Experience cards — large immersive format -->
+    <div class="space-y-16">
+      {experiences.map((exp, i) => (
+        <article class="group relative bg-white border border-stone-200 overflow-hidden card-hover chapter-reveal" style={`transition-delay: ${i * 150}ms`}>
+          <div class="grid md:grid-cols-5">
+            {/* Image — takes 3 cols on desktop */}
+            <div class="md:col-span-3 overflow-hidden">
+              <img
+                src={exp.image}
+                alt={exp.alt}
+                class="w-full h-72 md:h-full min-h-[320px] object-cover image-zoom"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+
+            {/* Content — takes 2 cols */}
+            <div class="md:col-span-2 p-8 md:p-12 flex flex-col justify-center">
+              <p class="text-amber-600 text-sm tracking-widest uppercase mb-2">{exp.subtitle}</p>
+              <h3 class="font-playfair text-2xl md:text-3xl text-stone-900 font-medium">{exp.title}</h3>
+              <p class="mt-5 text-stone-600 leading-relaxed">{exp.description}</p>
+              <div class="w-12 h-px bg-amber-600/40 mt-8"></div>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

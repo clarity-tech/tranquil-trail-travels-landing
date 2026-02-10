@@ -1,0 +1,137 @@
+---
+/**
+ * Chapter 2: Seven Sisters Map Reveal
+ * Interactive constellation-style map of Northeast India's seven sister states.
+ * States reveal progressively on scroll with descriptions.
+ */
+const states = [
+  {
+    name: "Assam",
+    tagline: "The Heartland",
+    description: "Where one-horned rhinos roam Kaziranga's grasslands and Majuli's river island holds the world's oldest traditions.",
+    cx: 250, cy: 210,
+  },
+  {
+    name: "Arunachal Pradesh",
+    tagline: "Land of the Dawn-Lit Mountains",
+    description: "Tawang's ancient monasteries float above clouds, and Mechuka's hidden valleys await the intrepid.",
+    cx: 380, cy: 80,
+  },
+  {
+    name: "Meghalaya",
+    tagline: "Abode of Clouds",
+    description: "Living root bridges woven by generations, and the cleanest village in Asia nestled in rolling hills.",
+    cx: 160, cy: 280,
+  },
+  {
+    name: "Nagaland",
+    tagline: "Land of Festivals",
+    description: "Konyak warrior heritage in Mon, and the legendary Dzukou Valley's seasonal carpet of wildflowers.",
+    cx: 440, cy: 200,
+  },
+  {
+    name: "Manipur",
+    tagline: "Jewel of India",
+    description: "Loktak's floating islands and a classical dance tradition that has enchanted the world.",
+    cx: 430, cy: 320,
+  },
+  {
+    name: "Mizoram",
+    tagline: "Land of the Highlanders",
+    description: "Blue mountains draped in bamboo groves, and a culture rich with song and community.",
+    cx: 390, cy: 420,
+  },
+  {
+    name: "Tripura",
+    tagline: "Land of Fourteen Gods",
+    description: "Ancient royal palaces meet sacred Neermahal, a water palace rising from Rudrasagar Lake.",
+    cx: 240, cy: 400,
+  },
+];
+
+// Connections between states (constellation lines)
+const connections = [
+  [0, 1], [0, 2], [0, 3], [0, 4], [3, 4], [4, 5], [5, 6], [2, 6],
+];
+---
+
+<section id="seven-sisters" class="py-24 md:py-36 bg-stone-900 text-white relative overflow-hidden" aria-label="The Seven Sisters of Northeast India">
+  <!-- Subtle background texture -->
+  <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+
+  <div class="relative z-10 container max-w-6xl px-6 mx-auto">
+    <!-- Chapter header -->
+    <div class="text-center mb-20">
+      <p class="chapter-number mb-4 chapter-reveal">Chapter Two</p>
+      <div class="chapter-divider mb-8 chapter-reveal delay-100"></div>
+      <h2 class="font-playfair text-3xl sm:text-4xl md:text-5xl font-medium chapter-reveal delay-200">
+        The Seven Sisters
+      </h2>
+      <p class="mt-6 text-stone-400 text-lg max-w-2xl mx-auto chapter-reveal delay-300">
+        Seven states, each a world unto itself. Together, they form India's most extraordinary frontier.
+      </p>
+    </div>
+
+    <!-- Map + Details layout -->
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <!-- SVG Constellation Map -->
+      <div class="scale-reveal" aria-hidden="true">
+        <svg viewBox="0 0 560 500" class="w-full max-w-lg mx-auto" role="img">
+          <title>Map of the Seven Sister States of Northeast India</title>
+
+          <!-- Connection lines -->
+          {connections.map(([a, b]) => (
+            <line
+              x1={states[a].cx}
+              y1={states[a].cy}
+              x2={states[b].cx}
+              y2={states[b].cy}
+              stroke="rgb(217 119 6 / 0.2)"
+              stroke-width="1"
+              stroke-dasharray="4 4"
+            />
+          ))}
+
+          <!-- State nodes -->
+          {states.map((state, i) => (
+            <g class="map-state" data-state={i}>
+              {/* Outer glow */}
+              <circle cx={state.cx} cy={state.cy} r="28" fill="rgb(217 119 6 / 0.08)" />
+              {/* Inner circle */}
+              <circle cx={state.cx} cy={state.cy} r="14" fill="rgb(217 119 6 / 0.25)" stroke="rgb(217 119 6 / 0.5)" stroke-width="1" />
+              {/* Center dot */}
+              <circle cx={state.cx} cy={state.cy} r="4" fill="#d97706" />
+              {/* Label */}
+              <text
+                x={state.cx}
+                y={state.cy - 36}
+                text-anchor="middle"
+                fill="#fafaf9"
+                font-size="13"
+                font-family="'Playfair Display', serif"
+                font-weight="500"
+              >
+                {state.name}
+              </text>
+            </g>
+          ))}
+        </svg>
+      </div>
+
+      <!-- State descriptions (scrollable list) -->
+      <div class="space-y-8" role="list" aria-label="Northeast Indian states">
+        {states.map((state, i) => (
+          <div
+            class="chapter-reveal border-l-2 border-amber-600/30 pl-6 hover:border-amber-500 transition-colors"
+            style={`transition-delay: ${i * 100}ms`}
+            role="listitem"
+          >
+            <h3 class="font-playfair text-xl md:text-2xl text-white font-medium">{state.name}</h3>
+            <p class="text-amber-500 text-sm tracking-wide mt-1">{state.tagline}</p>
+            <p class="text-stone-400 mt-3 leading-relaxed">{state.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

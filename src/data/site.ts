@@ -32,6 +32,7 @@ export const siteConfig = {
   ],
   contact: {
     email: "tranquiltrailtravels@gmail.com",
+    whatsapp: "+919531189920",
     instagram: "https://www.instagram.com/tranquil_trail_travels",
   },
 } as const;
