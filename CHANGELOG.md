@@ -128,3 +128,36 @@ Added site-wide navigation and internal linking that was missing from Phase 1.
 
 ### Footer Links (`src/pages/index.astro`)
 - Added "Destinations" text link in the footer alongside the Instagram button
+
+---
+
+## Destination Images & Responsive Optimization (Feb 2026)
+
+### Meghalaya Best Time Fix
+- Changed `months` from "October to May" → "September to May"
+- Updated note: monsoon period from "June-September" → "June-August", post-monsoon from "October-November" → "September-November"
+
+### Unsplash CDN Preconnect (`src/layouts/Layout.astro`)
+- Added `<link rel="preconnect" href="https://images.unsplash.com" crossorigin>` for early connection setup
+
+### Responsive Image Enhancement (`src/pages/destinations/[id].astro`)
+- Added `unsplashSrcset()` helper function — replaces `w=` param to generate multi-width srcset
+- Hero image: `srcset` with 4 widths (640, 1024, 1400, 1920), `sizes="100vw"`, `fetchpriority="high"`, `width`/`height` for CLS prevention
+- Experience images: `srcset` with 3 widths (480, 768, 960), `sizes="(min-width: 768px) 50vw, 100vw"`, `width`/`height`
+- OG image: computed from hero URL at `w=1200&q=80`, passed to Layout as `ogImage` prop
+- Structured data: added `image` field to `TouristDestination` JSON-LD schema
+
+### Destination Page Images (4 files)
+Populated all 24 image fields (4 heroes + 20 experiences) with Unsplash CDN URLs:
+- **Assam** (`assam.md`): tea garden landscape hero, Kaziranga rhino, Brahmaputra sunset, Majuli boat, tea workers, Kamakhya temple
+- **Arunachal Pradesh** (`arunachal-pradesh.md`): forest & snowy mountains hero, Tawang monastery, Ziro terraces, Sela Pass, Mechuka village, snow monastery
+- **Meghalaya** (`meghalaya.md`): Laitlum canyon hero, living root bridge, Nohkalikai falls, Dawki river, Mawlynnong village, Shillong/Laitlum vista
+- **Nagaland** (`nagaland.md`): mountain fog sunset hero, festival drummer, elder portrait, Dzukou meadow, Kohima, green village
+
+### Homepage Placeholder Replacement (3 components)
+Replaced all 8 `placehold.co` placeholder images with real Unsplash photos:
+- **HeroDawn.astro**: Kaziranga dawn → real Kaziranga landscape
+- **CulturalMoments.astro** (4 images): tea gardens, Tawang monastery, tribal cooking, living root bridge
+- **UniqueExperiences.astro** (3 images): Majuli boat, Dzukou meadow, Ziro rice terraces
+
+Zero `placehold.co` references remain on the site.

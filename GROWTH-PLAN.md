@@ -22,7 +22,7 @@
 
 ## The Plan - Phased Implementation
 
-### Phase 1: Foundation - Content Architecture & Destination Pages
+### Phase 1: Foundation - Content Architecture & Destination Pages ✅ COMPLETE
 **Priority: HIGH | SEO Impact: HIGH**
 
 #### 1.1 Set Up Astro Content Collections
@@ -180,12 +180,12 @@ Organize all content around these pillars for topical authority:
 ### Phase 4: Technical SEO & Performance
 **Priority: MEDIUM | SEO Impact: HIGH**
 
-#### 4.1 Structured Data Enhancement
-- Add `TouristDestination` schema to all destination pages
+#### 4.1 Structured Data Enhancement ✅ PARTIAL
+- ~~Add `TouristDestination` schema to all destination pages~~ ✅
 - Add `TouristTrip` schema for itinerary/experience pages
-- Add `FAQPage` schema to FAQ sections
+- ~~Add `FAQPage` schema to FAQ sections~~ ✅
 - Add `Article` / `BlogPosting` schema to blog posts
-- Add `BreadcrumbList` to all pages
+- ~~Add `BreadcrumbList` to all pages~~ ✅
 - Add `ImageObject` schema for key images
 - Validate all schemas with Google Rich Results Test
 
@@ -197,11 +197,11 @@ Organize all content around these pillars for topical authority:
 - "Related Experiences" cross-links
 - Breadcrumb navigation on all pages
 
-#### 4.3 Performance Optimizations
-- Image optimization pipeline (WebP/AVIF with fallbacks)
-- Replace placeholder images with real photography
-- Lazy loading for below-fold images
-- Preload critical assets
+#### 4.3 Performance Optimizations ✅ PARTIAL
+- ~~Image optimization pipeline (WebP/AVIF with fallbacks)~~ ✅ Unsplash `auto=format` serves WebP/AVIF automatically
+- ~~Replace placeholder images with real photography~~ ✅ All homepage + destination images are now real Unsplash photos
+- ~~Lazy loading for below-fold images~~ ✅ All images use `loading="lazy"` (hero uses `fetchpriority="high"`)
+- ~~Preload critical assets~~ ✅ Unsplash CDN preconnect added to Layout.astro
 - Target Core Web Vitals: LCP < 2.5s, CLS < 0.1, INP < 200ms
 
 #### 4.4 Sitemap & Indexing
@@ -216,8 +216,8 @@ Organize all content around these pillars for topical authority:
 ### Phase 5: Social Media & Distribution
 **Priority: MEDIUM | Growth Impact: HIGH**
 
-#### 5.1 Open Graph & Social Cards
-- Generate unique OG images for each destination page (state name + hero image)
+#### 5.1 Open Graph & Social Cards ✅ PARTIAL
+- ~~Generate unique OG images for each destination page (state name + hero image)~~ ✅ Destination pages use Unsplash hero as OG image
 - Generate OG images for each blog post
 - Twitter Card meta tags (already have basic setup, enhance per-page)
 - Pinterest rich pins (add Article and Product pins)
@@ -334,4 +334,5 @@ For each blog post, create:
 ---
 
 *Plan created: February 2026*
-*Next step: Start with Phase 1, Task #1 - Set up Content Collections*
+*Last updated: February 2026 — Phase 1 complete, Phase 4 & 5 partially complete*
+*Next step: Phase 2 (sub-destination pages) or Phase 3 (blog system)*

@@ -10,7 +10,7 @@
 - **Instagram**: https://www.instagram.com/tranquil_trail_travels
 
 ## Current Site Structure
-- `/` - Homepage with 5-chapter storytelling narrative
+- `/` - Homepage with 5-chapter storytelling narrative (all images are real Unsplash photos)
 - `/destinations/` - Hub page linking to 4 state-level destination pages
 - `/destinations/[id]/` - Dynamic destination pages (Assam, Arunachal Pradesh, Meghalaya, Nagaland) with hero, highlights, experiences, itineraries, FAQ, CTA sections
 - `/llms.txt` - AI crawler discoverability endpoint
