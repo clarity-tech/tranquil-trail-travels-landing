@@ -6,7 +6,7 @@
 - **Deployed**: GitHub Pages via GitHub Actions (`.github/workflows/deploy.yml`)
 - **Brand**: Premium, luxury travel focused on Northeast India
 - **Voice**: Storytelling-first, "stories written in mist & gold" narrative style
-- **Contact model**: WhatsApp-first (+919531189920), secondary email (tranquiltrailtravels@gmail.com)
+- **Contact model**: WhatsApp-first (+916002324880), secondary email (tranquiltrailtravels@gmail.com)
 - **Instagram**: https://www.instagram.com/tranquil_trail_travels
 
 ## Current Site Structure
