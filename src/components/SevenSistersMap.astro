@@ -104,28 +104,39 @@ const connections = [
           ))}
 
           <!-- State nodes -->
-          {states.map((state, i) => (
-            <g class="map-state" data-state={i}>
-              {/* Outer glow */}
-              <circle cx={state.cx} cy={state.cy} r="28" fill="rgb(217 119 6 / 0.08)" />
-              {/* Inner circle */}
-              <circle cx={state.cx} cy={state.cy} r="14" fill="rgb(217 119 6 / 0.25)" stroke="rgb(217 119 6 / 0.5)" stroke-width="1" />
-              {/* Center dot */}
-              <circle cx={state.cx} cy={state.cy} r="4" fill="#d97706" />
-              {/* Label */}
-              <text
-                x={state.cx}
-                y={state.cy - 36}
-                text-anchor="middle"
-                fill="#fafaf9"
-                font-size="13"
-                font-family="'Playfair Display', serif"
-                font-weight="500"
-              >
-                {state.name}
-              </text>
-            </g>
-          ))}
+          {states.map((state, i) => {
+            const node = (
+                <g class:list={['map-state', state.href && 'map-state--link']} data-state={i}>
+                {/* Outer glow */}
+                <circle cx={state.cx} cy={state.cy} r="28" fill="rgb(217 119 6 / 0.08)" />
+                {/* Inner circle */}
+                <circle cx={state.cx} cy={state.cy} r="14" fill="rgb(217 119 6 / 0.25)" stroke="rgb(217 119 6 / 0.5)" stroke-width="1" />
+                {/* Center dot */}
+                <circle cx={state.cx} cy={state.cy} r="4" fill="#d97706" />
+                {/* Label */}
+                <text
+                  x={state.cx}
+                  y={state.cy - 36}
+                  text-anchor="middle"
+                  fill="#fafaf9"
+                  font-size="13"
+                  font-family="'Playfair Display', serif"
+                  font-weight="500"
+                >
+                  {state.name}
+                </text>
+              </g>
+            );
+
+            // Only the four states with a destination page become links; the rest
+            // stay decorative and, via .map-state--link, keep the default cursor.
+            // The map is aria-hidden: it restates the list beside it. tabindex="-1"
+            // keeps these out of the tab order, since aria-hidden must never contain
+            // focusable elements and AT users already have the same four links below.
+            return state.href ? (
+              <a href={state.href} tabindex="-1">{node}</a>
+            ) : node;
+          })}
         </svg>
       </div>
 

@@ -279,3 +279,28 @@ scroll), which is too deep for the only thing on the site you can book by date.
 
 ### Verification
 - Overflow check re-run: 21/21 configurations clean, homepage included, at 320–1440px.
+
+## Fix — Seven Sisters Map Nodes Were Not Clickable (Sep 2026)
+
+`global.css` set `cursor: pointer` on every `.map-state` node and gave them a hover
+brightness/scale, but the `<g>` elements had no link, no click handler, and the component has no
+`<script>` — so the map advertised a click target that did nothing. (`.map-state.is-active` is
+defined in CSS and applied by nothing; left in place as pre-existing dead style.)
+
+- The four states with a destination page (Assam, Arunachal Pradesh, Meghalaya, Nagaland) now wrap
+  their node in an SVG `<a>`. Their `href` was already in the component's `states` array — only the
+  description list beside the map was using it.
+- Tripura, Manipur and Mizoram have no page yet, so they lose the pointer via a new
+  `.map-state--link` class. They now look inert because they are inert.
+- The map wrapper is `aria-hidden="true"` because it restates the list beside it. Focusable elements
+  inside an `aria-hidden` container are an accessibility violation, so the new links carry
+  `tabindex="-1"`: mouse users get the click they expect, and AT and keyboard users continue to use
+  the identical four links in the adjacent list rather than meeting each destination twice.
+
+### Verification
+- Click-tested all seven nodes in headless Chrome, each scrolled into view first: the four linked
+  states navigate to the right page, the three unlinked ones stay put. 7/7 as intended.
+- Asserted zero focusable elements inside `[aria-hidden="true"]`.
+- Computed-style audit confirms `cursor: pointer` on exactly the four linked nodes and `auto` on the
+  other three.
+- Overflow check re-run: clean at 320–1440px.

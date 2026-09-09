@@ -292,8 +292,15 @@ body {
 /* Map state interactive highlight */
 .map-state {
   transition: all 0.5s ease-out;
+}
+
+/* Only the states that actually link to a destination page get the pointer.
+   Tripura, Manipur and Mizoram have no page yet, so they must not advertise a
+   click that does nothing. */
+.map-state--link {
   cursor: pointer;
 }
+
 
 .map-state:hover {
   filter: brightness(1.2);
