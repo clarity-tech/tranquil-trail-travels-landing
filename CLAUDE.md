@@ -1,7 +1,7 @@
 # Tranquil Trail Travels
 
 ## Project Overview
-- **Framework**: Astro v5 static site with Tailwind CSS v4
+- **Framework**: Astro v7 static site with Tailwind CSS v4 (upgraded from v5 in Sep 2026)
 - **Domain**: https://tranquiltrailtravels.com
 - **Deployed**: GitHub Pages via GitHub Actions (`.github/workflows/deploy.yml`)
 - **Brand**: Premium, luxury travel focused on Northeast India
@@ -40,3 +40,7 @@ Full plan is in `GROWTH-PLAN.md`. Implementation order:
 - Fonts: Playfair Display (headings), Inter (body)
 - Color palette: stone + amber accents
 - Site config lives in `src/data/site.ts`
+- Astro 7 uses the Rust compiler: it errors on unclosed tags, no longer auto-corrects invalid HTML
+  nesting, and **drops the whitespace text node between sibling elements**. Never let a gap between
+  two inline elements come from source whitespace — use `gap`/margin, or it will close up in the
+  build. Requires Node >= 22.12 (CI is on 24).

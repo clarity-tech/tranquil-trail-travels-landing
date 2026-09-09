@@ -161,3 +161,42 @@ Replaced all 8 `placehold.co` placeholder images with real Unsplash photos:
 - **UniqueExperiences.astro** (3 images): Majuli boat, Dzukou meadow, Ziro rice terraces
 
 Zero `placehold.co` references remain on the site.
+
+## Dependency Upgrade — Astro 5 → 7 (Sep 2026)
+
+All packages moved to latest. `npm outdated` is now empty and `npm audit` reports 0 vulnerabilities
+(previously 12: 1 critical, 9 high, 1 moderate, 1 low — Vite 6 dev-server path traversal and
+arbitrary file read, plus a Rollup 4 path traversal).
+
+### Versions
+- `astro` 5.16.16 → **7.3.2** (Vite 6 → Vite 8, Go compiler → Rust compiler)
+- `@astrojs/sitemap` 3.7.0 → 3.7.4 · `tailwindcss` + `@tailwindcss/vite` 4.1.18 → 4.3.3 ·
+  `@tailwindcss/typography` 0.5.19 → 0.5.20
+- `npm audit fix` deduped a nested Vite 6 under `@tailwindcss/vite` onto Vite 8. It wrote no
+  `overrides` block — `package.json` carries plain version bumps and the dedup lives in the lockfile.
+- Astro 7 requires Node >= 22.12. Local and CI (`deploy.yml`) are both on Node 24 — no change needed.
+
+### Breaking changes assessed
+- **v6 — endpoints with a file extension reject a trailing slash**: `/llms.txt` is the only such
+  route; nothing links to `/llms.txt/`. No action.
+- **v6 — `import.meta.env` always inlined, never coerced**: not used anywhere in `src/`. No action.
+- **v7 — Vite 8**: `@tailwindcss/vite` declares `vite: ^5.2 || ^6 || ^7 || ^8`. Compatible.
+- **v7 — Rust compiler**: builds clean, so no unclosed tags or invalid nesting existed.
+
+### One real regression, found and fixed
+The Rust compiler drops the whitespace text node between sibling elements. On the fixed-departure
+card, the gap between `₹28,800` and `Per person, twin sharing` came from an HTML space *plus*
+`ml-2`; under Astro 7 only the margin survived and the two ran together. Replaced with an explicit
+`flex items-baseline gap-2`, so the spacing no longer depends on compiler whitespace handling.
+
+### Verification
+- Built the same source under Astro 5.18.2 and 7.3.2 and compared: visible text and all JSON-LD
+  byte-identical on all 10 pages; remaining HTML differences are cosmetic only (`&#38;` → `&amp;`,
+  CSS chunk renamed `_id_.*` → `Layout.*`, JS minifier style, whitespace).
+- Headless-Chrome pixel comparison, animations disabled and all reveals forced: the original pins
+  (Astro 5.16.16 + Tailwind 4.1.18) and the final state (Astro 7.3.2 + Tailwind 4.3.3) build the
+  same source **pixel-identical on 10/10 renders** across 5 routes x 390/1280px — so the Tailwind
+  and typography bumps are covered too, including the `prose` markdown bodies. A transient delta on
+  the Cherrapunji hero was ruled out as Unsplash `auto=format` serving variance via a same-build
+  control that rendered identically to itself.
+- Overflow check re-run on the Astro 7 build: 21/21 configurations clean.
