@@ -1,0 +1,598 @@
+---
+/**
+ * Fixed Departure Page — /fixed-departures/[slug]/
+ * A dated, priced group departure: hero, day-by-day narrative,
+ * itinerary table, inclusions/exclusions, group policy, FAQ, CTA.
+ */
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+import { siteConfig } from '../../data/site';
+import { unsplashSrcset } from '../../utils/image';
+
+export async function getStaticPaths() {
+  const departures = await getCollection('fixedDepartures');
+  return departures.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const {
+  title,
+  tagline,
+  state,
+  parentState,
+  description,
+  heroImage,
+  startDate,
+  endDate,
+  durationNights,
+  durationDays,
+  price,
+  priceCurrency,
+  priceNote,
+  status,
+  routeSummary,
+  arrivalNote,
+  highlights,
+  days,
+  inclusions,
+  exclusions,
+  groupPolicy,
+  faqs,
+  seo,
+} = entry.data;
+
+// "past" is derived at build time so a concluded departure degrades honestly
+// instead of advertising a date that has already gone by.
+const isPast = endDate.getTime() < Date.now();
+
+const fmtDay = (d: Date) =>
+  new Intl.DateTimeFormat('en-GB', { day: 'numeric', timeZone: 'UTC' }).format(d);
+const fmtFull = (d: Date) =>
+  new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(d);
+const fmtMonthYear = (d: Date) =>
+  new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(d);
+
+const sameMonth =
+  startDate.getUTCMonth() === endDate.getUTCMonth() &&
+  startDate.getUTCFullYear() === endDate.getUTCFullYear();
+
+const dateRange = sameMonth
+  ? `${fmtDay(startDate)}–${fmtDay(endDate)} ${fmtMonthYear(startDate)}`
+  : `${fmtFull(startDate)} – ${fmtFull(endDate)}`;
+
+const priceDisplay = new Intl.NumberFormat('en-IN').format(price);
+const durationLabel = `${durationNights}N / ${durationDays}D`;
+
+const whatsappNumber = '916002324880';
+const enquiryMessage = isPast
+  ? `Hello! I saw the "${title}" departure (${dateRange}) on your site. Will you be running it again? I'd love to join the next one.`
+  : `Hello! I'd like to book a seat on the "${title}" fixed departure (${dateRange}, ${durationLabel}). Could you share the next steps?`;
+const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(enquiryMessage)}`;
+
+const canonical = new URL(`/fixed-departures/${entry.id}/`, siteConfig.url).href;
+const destinationUrl = `/destinations/${parentState}/`;
+
+const ogImageUrl = heroImage
+  ? heroImage.replace(/w=\d+/, 'w=1200').replace(/q=\d+/, 'q=80')
+  : undefined;
+
+const statusLabel: Record<string, string> = {
+  'open': 'Bookings open',
+  'filling-fast': 'Filling fast',
+  'sold-out': 'Sold out',
+};
+
+// Structured Data
+const tripSchema = {
+  "@context": "https://schema.org",
+  "@type": "TouristTrip",
+  "name": title,
+  "description": description,
+  "url": canonical,
+  ...(heroImage ? { "image": heroImage } : {}),
+  "touristType": "Small group traveler",
+  "itinerary": {
+    "@type": "ItemList",
+    "numberOfItems": days.length,
+    "itemListElement": days.map((d) => ({
+      "@type": "ListItem",
+      "position": d.day,
+      "item": {
+        "@type": "TouristAttraction",
+        "name": `Day ${d.day}: ${d.title}`,
+        "description": d.route,
+      },
+    })),
+  },
+  "provider": {
+    "@type": "TravelAgency",
+    "name": siteConfig.name,
+    "url": siteConfig.url,
+    "telephone": siteConfig.contact.whatsapp,
+    "email": siteConfig.contact.email,
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": price,
+    "priceCurrency": priceCurrency,
+    "url": canonical,
+    "availability": isPast || status === 'sold-out'
+      ? "https://schema.org/SoldOut"
+      : "https://schema.org/InStock",
+    "validThrough": startDate.toISOString().slice(0, 10),
+  },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": siteConfig.url },
+    { "@type": "ListItem", "position": 2, "name": "Destinations", "item": `${siteConfig.url}/destinations/` },
+    { "@type": "ListItem", "position": 3, "name": state, "item": `${siteConfig.url}${destinationUrl}` },
+    { "@type": "ListItem", "position": 4, "name": title, "item": canonical },
+  ],
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map((faq) => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": { "@type": "Answer", "text": faq.answer },
+  })),
+};
+---
+
+<Layout
+  title={`${title} — Tranquil Trail Travels`}
+  seoTitle={seo.metaTitle}
+  seoDescription={seo.metaDescription}
+  canonicalUrl={canonical}
+  ogImage={ogImageUrl}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(tripSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  </Fragment>
+
+  <main>
+    <!-- Breadcrumbs -->
+    <nav class="bg-white border-b border-stone-200" aria-label="Breadcrumb">
+      <div class="container max-w-6xl mx-auto px-6 py-4">
+        <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-stone-500">
+          <li><a href="/" class="hover:text-amber-600 transition-colors">Home</a></li>
+          <li aria-hidden="true">
+            <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </li>
+          <li><a href="/destinations/" class="hover:text-amber-600 transition-colors">Destinations</a></li>
+          <li aria-hidden="true">
+            <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </li>
+          <li><a href={destinationUrl} class="hover:text-amber-600 transition-colors">{state}</a></li>
+          <li aria-hidden="true">
+            <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </li>
+          <li><span class="text-stone-800 font-medium" aria-current="page">{title}</span></li>
+        </ol>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="relative py-28 md:py-40 overflow-hidden" aria-label={`${title} overview`}>
+      <div class="absolute inset-0 bg-gradient-to-br from-stone-900 via-stone-800 to-amber-950"></div>
+
+      {heroImage && (
+        <div class="absolute inset-0">
+          <img
+            src={heroImage}
+            srcset={unsplashSrcset(heroImage, [640, 1024, 1400, 1920])}
+            sizes="100vw"
+            alt={`${state} landscape`}
+            class="w-full h-full object-cover"
+            width="1920"
+            height="1080"
+            loading="eager"
+            decoding="async"
+            fetchpriority="high"
+          />
+          <div class="absolute inset-0 bg-gradient-to-b from-stone-900/80 via-stone-900/60 to-stone-900/90"></div>
+        </div>
+      )}
+
+      <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+      <div class="absolute top-0 right-0 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl"></div>
+
+      <div class="relative z-10 container max-w-4xl px-6 mx-auto text-center">
+        <p class="chapter-number mb-4 animate-fade-in" style="animation-delay: 0.2s;">Fixed Departure</p>
+        <div class="chapter-divider mb-10 animate-fade-in" style="animation-delay: 0.4s;"></div>
+
+        <h1 class="font-playfair text-4xl sm:text-5xl md:text-6xl font-semibold text-white leading-tight animate-fade-in-up" style="animation-delay: 0.6s;">
+          {title}
+        </h1>
+
+        <p class="mt-6 text-stone-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style="animation-delay: 0.9s;">
+          {tagline}
+        </p>
+
+        <!-- Key facts -->
+        <div class="mt-10 flex flex-wrap items-center justify-center gap-3 animate-fade-in-up" style="animation-delay: 1.2s;">
+          <span class="inline-flex items-center gap-2.5 bg-white/10 backdrop-blur-sm border border-white/20 px-5 py-2.5 rounded-sm">
+            <svg class="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <span class="text-white text-sm font-medium">{dateRange}</span>
+          </span>
+          <span class="inline-flex items-center gap-2.5 bg-white/10 backdrop-blur-sm border border-white/20 px-5 py-2.5 rounded-sm">
+            <svg class="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="text-white text-sm font-medium">{durationLabel}</span>
+          </span>
+          <span class="inline-flex items-center gap-2.5 bg-amber-600/20 backdrop-blur-sm border border-amber-500/40 px-5 py-2.5 rounded-sm">
+            <span class="text-white text-sm font-medium">₹{priceDisplay}</span>
+            <span class="text-stone-300 text-sm">{priceNote}</span>
+          </span>
+        </div>
+
+        {isPast ? (
+          <p class="mt-8 inline-block text-stone-300 text-sm border border-stone-500/60 px-5 py-2.5 rounded-sm animate-fade-in-up" style="animation-delay: 1.4s;">
+            This departure has concluded — message us about the next edition.
+          </p>
+        ) : (
+          <p class="mt-8 text-amber-400 text-sm tracking-widest uppercase animate-fade-in-up" style="animation-delay: 1.4s;">
+            {statusLabel[status]} · Max {groupPolicy.maxGroupSize} travellers
+          </p>
+        )}
+      </div>
+    </section>
+
+    <!-- Intro -->
+    <section class="py-20 md:py-28 bg-white" aria-label={`About ${title}`}>
+      <div class="container max-w-3xl px-6 mx-auto">
+        <div class="prose prose-lg prose-stone prose-headings:font-playfair prose-headings:font-medium prose-a:text-amber-600 hover:prose-a:text-amber-700 max-w-none chapter-reveal">
+          <Content />
+        </div>
+        <p class="mt-10 text-stone-500 text-sm tracking-wide border-t border-stone-200 pt-6 chapter-reveal">
+          <span class="text-stone-700 font-medium">Route:</span> {routeSummary}
+        </p>
+      </div>
+    </section>
+
+    <!-- Arrival note -->
+    {arrivalNote && !isPast && (
+      <section class="py-10 bg-amber-50 border-y border-amber-200" aria-label="Arrival information">
+        <div class="container max-w-4xl px-6 mx-auto flex items-start gap-4">
+          <svg class="w-5 h-5 text-amber-700 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <p class="text-stone-700 leading-relaxed">{arrivalNote}</p>
+        </div>
+      </section>
+    )}
+
+    <!-- Highlights -->
+    {highlights.length > 0 && (
+      <section class="py-20 md:py-28 bg-white" aria-label="Trip highlights">
+        <div class="container max-w-5xl px-6 mx-auto">
+          <div class="text-center mb-16">
+            <p class="chapter-number mb-4 animate-on-scroll">Highlights</p>
+            <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+            <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium animate-on-scroll delay-200">
+              What This Journey Holds
+            </h2>
+          </div>
+
+          <div class="grid gap-6 sm:grid-cols-2">
+            {highlights.map((highlight, i) => (
+              <div
+                class="flex items-start gap-4 bg-stone-50 border border-stone-200 p-6 animate-on-scroll"
+                style={`transition-delay: ${i * 80}ms`}
+              >
+                <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <p class="text-stone-600 leading-relaxed">{highlight}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Day by day -->
+    <section class="py-20 md:py-28 bg-white" aria-label="Day by day itinerary">
+      <div class="container max-w-6xl px-6 mx-auto">
+        <div class="text-center mb-20">
+          <p class="chapter-number mb-4 animate-on-scroll">Day by Day</p>
+          <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+          <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium animate-on-scroll delay-200">
+            Seven Days in the Hills
+          </h2>
+        </div>
+
+        <div class="space-y-20 md:space-y-28">
+          {days.map((day, i) => (
+            <div class="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+              <div class={`overflow-hidden rounded-sm ${i % 2 === 1 ? 'md:order-2' : ''} ${i % 2 === 0 ? 'slide-left' : 'slide-right'}`} style="transition-delay: 100ms">
+                {day.image ? (
+                  <img
+                    src={day.image}
+                    srcset={unsplashSrcset(day.image, [480, 768, 960])}
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    alt={`Day ${day.day} — ${day.title}`}
+                    class="w-full h-72 md:h-96 object-cover image-zoom"
+                    width="960"
+                    height="640"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <div class="w-full h-72 md:h-96 bg-gradient-to-br from-stone-200 to-stone-300 flex items-center justify-center">
+                    <span class="font-playfair text-stone-400 text-xl">{day.title}</span>
+                  </div>
+                )}
+              </div>
+
+              <div class={`${i % 2 === 1 ? 'md:order-1 md:text-right' : ''}`}>
+                <p class="text-amber-600 text-sm tracking-widest uppercase mb-3 animate-on-scroll" style="transition-delay: 200ms">
+                  Day {day.day} · {day.route}
+                </p>
+                <h3 class="font-playfair text-2xl md:text-3xl text-stone-900 font-medium animate-on-scroll" style="transition-delay: 300ms">
+                  {day.title}
+                </h3>
+                <p class="mt-4 text-stone-600 leading-relaxed text-lg animate-on-scroll" style="transition-delay: 400ms">
+                  {day.description}
+                </p>
+                <div class={`mt-6 flex flex-wrap gap-3 animate-on-scroll ${i % 2 === 1 ? 'md:justify-end' : ''}`} style="transition-delay: 500ms">
+                  <span class="inline-flex items-center gap-2 bg-stone-100 text-stone-700 text-sm px-3 py-1.5 rounded-sm">
+                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    {day.stay}
+                  </span>
+                  {day.meals.length > 0 && (
+                    <span class="inline-flex items-center gap-2 bg-amber-600/10 text-amber-700 text-sm px-3 py-1.5 rounded-sm">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18M8 3v6a3 3 0 006 0V3M18 3v18"></path>
+                      </svg>
+                      {day.meals.join(', ')}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Itinerary at a glance -->
+    <section class="py-20 md:py-28 bg-stone-50" aria-label="Itinerary at a glance">
+      <div class="container max-w-5xl px-6 mx-auto">
+        <div class="text-center mb-16">
+          <p class="chapter-number mb-4 animate-on-scroll">At a Glance</p>
+          <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+          <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium animate-on-scroll delay-200">
+            The Whole Journey
+          </h2>
+        </div>
+
+        <div class="overflow-x-auto border border-stone-200 bg-white animate-on-scroll">
+          <table class="w-full text-left border-collapse min-w-[36rem]">
+            <thead>
+              <tr class="border-b border-stone-200 bg-stone-50">
+                <th scope="col" class="p-4 font-playfair text-stone-900 font-medium whitespace-nowrap">Day</th>
+                <th scope="col" class="p-4 font-playfair text-stone-900 font-medium">Route</th>
+                <th scope="col" class="p-4 font-playfair text-stone-900 font-medium">Stay</th>
+                <th scope="col" class="p-4 font-playfair text-stone-900 font-medium whitespace-nowrap">Meals</th>
+              </tr>
+            </thead>
+            <tbody>
+              {days.map((day) => (
+                <tr class="border-b border-stone-100 last:border-0">
+                  <th scope="row" class="p-4 text-stone-900 font-medium whitespace-nowrap align-top">Day {day.day}</th>
+                  <td class="p-4 text-stone-600 align-top">{day.route}</td>
+                  <td class="p-4 text-stone-600 align-top">{day.stay}</td>
+                  <td class="p-4 text-stone-500 text-sm align-top">{day.meals.length > 0 ? day.meals.join(', ') : '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Inclusions & exclusions -->
+    <section class="py-20 md:py-28 bg-white" aria-label="What is included">
+      <div class="container max-w-6xl px-6 mx-auto">
+        <div class="text-center mb-16">
+          <p class="chapter-number mb-4 animate-on-scroll">The Details</p>
+          <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+          <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium animate-on-scroll delay-200">
+            What ₹{priceDisplay} Covers
+          </h2>
+          <p class="mt-6 text-stone-600 text-lg max-w-2xl mx-auto animate-on-scroll delay-300">
+            {priceNote} · {durationLabel} · {dateRange}
+          </p>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-2">
+          <div class="bg-stone-50 border-l-4 border-amber-600 p-8 md:p-10 animate-on-scroll">
+            <h3 class="font-playfair text-xl text-stone-900 font-medium mb-6">Inclusions</h3>
+            <ul class="space-y-4">
+              {inclusions.map((item) => (
+                <li class="flex items-start gap-3">
+                  <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  <span class="text-stone-600 leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="bg-stone-50 border-l-4 border-stone-300 p-8 md:p-10 animate-on-scroll delay-100">
+            <h3 class="font-playfair text-xl text-stone-900 font-medium mb-6">Exclusions</h3>
+            <ul class="space-y-4">
+              {exclusions.map((item) => (
+                <li class="flex items-start gap-3">
+                  <svg class="w-5 h-5 text-stone-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                  <span class="text-stone-600 leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Group policy -->
+    <section class="py-20 md:py-28 bg-stone-50" aria-label="Group and travel policy">
+      <div class="container max-w-4xl px-6 mx-auto">
+        <div class="text-center mb-16">
+          <p class="chapter-number mb-4 animate-on-scroll">The Group</p>
+          <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+          <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium animate-on-scroll delay-200">
+            Who You'll Travel With
+          </h2>
+        </div>
+
+        <p class="text-stone-600 text-lg leading-relaxed text-center max-w-2xl mx-auto animate-on-scroll">
+          {groupPolicy.note}
+        </p>
+
+        <div class="grid gap-6 sm:grid-cols-3 mt-12">
+          <div class="bg-white border border-stone-200 p-6 text-center animate-on-scroll">
+            <p class="text-amber-600 text-sm tracking-widest uppercase">Age group</p>
+            <p class="mt-2 font-playfair text-xl text-stone-900">{groupPolicy.ageGroup}</p>
+          </div>
+          <div class="bg-white border border-stone-200 p-6 text-center animate-on-scroll delay-100">
+            <p class="text-amber-600 text-sm tracking-widest uppercase">Max group size</p>
+            <p class="mt-2 font-playfair text-xl text-stone-900">{groupPolicy.maxGroupSize} travellers</p>
+          </div>
+          <div class="bg-white border border-stone-200 p-6 text-center animate-on-scroll delay-200">
+            <p class="text-amber-600 text-sm tracking-widest uppercase">Vehicle</p>
+            <p class="mt-2 font-playfair text-xl text-stone-900">{groupPolicy.vehicle}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    {faqs.length > 0 && (
+      <section class="py-20 md:py-28 bg-white" aria-label="Frequently asked questions">
+        <div class="container max-w-3xl px-6 mx-auto">
+          <div class="text-center mb-16">
+            <p class="chapter-number mb-4 animate-on-scroll">FAQ</p>
+            <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+            <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium animate-on-scroll delay-200">
+              Before You Book
+            </h2>
+          </div>
+
+          <div class="space-y-4">
+            {faqs.map((faq, i) => (
+              <details class="group bg-stone-50 border border-stone-200 animate-on-scroll" style={`transition-delay: ${i * 80}ms`}>
+                <summary class="flex items-center justify-between cursor-pointer p-6 md:p-8 list-none [&::-webkit-details-marker]:hidden">
+                  <h3 class="font-playfair text-lg text-stone-900 font-medium pr-4">{faq.question}</h3>
+                  <svg class="w-5 h-5 text-amber-600 flex-shrink-0 transform transition-transform duration-300 group-open:rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                </summary>
+                <div class="px-6 pb-6 md:px-8 md:pb-8 -mt-2">
+                  <p class="text-stone-600 leading-relaxed">{faq.answer}</p>
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- CTA -->
+    <section class="relative py-24 md:py-36 overflow-hidden" aria-label="Reserve your seat">
+      <div class="absolute inset-0 bg-gradient-to-br from-stone-900 via-stone-800 to-amber-950"></div>
+      <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+      <div class="absolute top-0 right-0 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl"></div>
+
+      <div class="relative z-10 container max-w-4xl px-6 mx-auto text-center">
+        <p class="chapter-number mb-4 chapter-reveal">Your Seat</p>
+        <div class="chapter-divider mb-10 chapter-reveal delay-100"></div>
+
+        <h2 class="font-playfair text-3xl sm:text-4xl md:text-5xl font-medium text-white leading-tight chapter-reveal delay-200">
+          {isPast ? `Travelling with us next time?` : `Only ${groupPolicy.maxGroupSize} seats. One departure.`}
+        </h2>
+
+        <p class="mt-8 text-stone-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed chapter-reveal delay-300">
+          {isPast
+            ? `This departure has concluded, but we run journeys like it through ${state} each season. Tell us when you're free and we'll share the next dates.`
+            : `${dateRange}. ₹${priceDisplay} ${priceNote.toLowerCase()}. Message us on WhatsApp and we'll walk you through the booking, the packing list, and everything in between.`}
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-5 mt-12 chapter-reveal delay-400">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="whatsapp-btn"
+            aria-label={`Enquire about ${title} on WhatsApp`}
+          >
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+            </svg>
+            <span>{isPast ? 'Ask About Next Dates' : 'Reserve Your Seat'}</span>
+          </a>
+
+          <a
+            href={`mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(`${title} — ${dateRange}`)}`}
+            class="inline-flex items-center gap-3 px-8 py-4 border border-stone-500 text-stone-300 hover:border-amber-500 hover:text-amber-400 transition-all duration-300 text-base tracking-wide rounded-sm"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            <span>Write to Us</span>
+          </a>
+        </div>
+
+        <p class="mt-10 text-stone-500 text-sm chapter-reveal delay-500">
+          Prefer your own dates? We craft private versions of this route for any group.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const scrollObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    document.querySelectorAll('.animate-on-scroll, .chapter-reveal, .text-reveal, .scale-reveal, .slide-left, .slide-right').forEach(el => {
+      scrollObserver.observe(el);
+    });
+  </script>
+</Layout>

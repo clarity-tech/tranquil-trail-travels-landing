@@ -162,6 +162,56 @@ Replaced all 8 `placehold.co` placeholder images with real Unsplash photos:
 
 Zero `placehold.co` references remain on the site.
 
+## Fixed Departures — A Meghalayan Winter Tale (Sep 2026)
+
+Added a fourth content collection for dated, priced group departures, transcribed from
+`Tranquil_Trails_Meghalaya_Itinerary_V6.pdf`.
+
+### New collection (`src/content.config.ts`)
+- **fixedDepartures** — `glob` loader from `src/content/fixed-departures/`. Schema carries what a
+  sample itinerary cannot: `startDate`/`endDate` as real dates (`z.coerce.date()`, matching the blog
+  collection), `price`/`priceCurrency`/`priceNote`, `durationNights`/`durationDays`, per-day
+  `days[]` (route, description, stay, meals, image), `inclusions`, `exclusions`, `groupPolicy`,
+  `arrivalNote`, `status`, `faqs`, `seo`.
+- `status` is only `open` / `filling-fast` / `sold-out` — "past" is derived from `endDate` at build
+  time, so a concluded departure degrades on its own instead of advertising a date that has gone by.
+
+### Content (`src/content/fixed-departures/meghalayan-winter-tale-2026.md`)
+- 6N/7D, 25–31 December 2026, ₹28,800 per person twin sharing, max 11 travellers.
+- Guwahati → Shillong → Sohra → Pongtung → Shnongpdeng → Shillong → Guwahati.
+- All 7 days, 8 inclusions, 4 exclusions, and the group policy transcribed from the PDF.
+- 6 FAQs written for the page (flight timing, shared-vs-private, accommodation, December weather,
+  David Scott Trail fitness, what the price excludes) — not in the source PDF.
+- Slug carries the year so the 2027 edition takes a new URL and this page can go "past" rather
+  than 404.
+- Day images reuse existing Meghalaya Unsplash URLs rather than extracting the PDF's embedded
+  images, keeping the `unsplashSrcset()` pattern and the repo free of binaries. Each is matched to
+  its day's subject (caving photo on the caves day, root-bridge photo on the root-bridge day, and
+  so on); Day 7 has none and falls back to the gradient placeholder.
+
+### New route (`src/pages/fixed-departures/[slug].astro`)
+- Hero with date/duration/price badges, intro, arrival note, highlights, alternating day-by-day
+  blocks, an at-a-glance table, inclusions/exclusions, group policy, FAQ accordion, CTA.
+- WhatsApp CTA prefills a booking message; on a past departure it switches to asking about the
+  next edition, the arrival note and status line hide, and `Offer.availability` flips to `SoldOut`.
+- Structured data: `TouristTrip` (with `ItemList` itinerary and `Offer`), `BreadcrumbList`
+  (Home > Destinations > Meghalaya > trip), `FAQPage`. Dynamic OG image from the hero, as on
+  destination pages.
+
+### Destination page link (`src/pages/destinations/[id].astro`)
+- New "Fixed Departures" section lists upcoming departures for that state, filtered on
+  `endDate >= now` and sorted by `startDate`, so the new route is not an orphan in the sitemap.
+- Card image is `absolute inset-0` inside a `relative` wrapper so the text column sizes the card;
+  left in flow it drove the row height and opened a void beside the copy.
+
+### Verification
+- Build clean, 10 pages; new route in `sitemap-0.xml`; all 4 JSON-LD blocks parse.
+- Headless Chrome overflow check across 3 routes x 7 widths (320–1440), scrolled to fire every
+  reveal: `scrollWidth == clientWidth` and `scrollX == 0` in all 21 configurations — the
+  `:has(> .slide-*)` guard from the Aug 2026 overflow fix covers the new day-by-day blocks, and the
+  at-a-glance table is confined by `overflow-x-auto`.
+- Past-departure path verified against a temporary fixture with 2025 dates, then removed.
+
 ## Dependency Upgrade — Astro 5 → 7 (Sep 2026)
 
 All packages moved to latest. `npm outdated` is now empty and `npm audit` reports 0 vulnerabilities

@@ -45,6 +45,21 @@ const subDestinations = allSubDestinations
     slug: sub.id.replace(/^[^/]+\//, ''),
   }));
 
+// Upcoming fixed departures for this state (past ones are dropped at build time)
+const allDepartures = await getCollection('fixedDepartures');
+const fixedDepartures = allDepartures
+  .filter(dep => dep.data.parentState === entry.id && dep.data.endDate.getTime() >= Date.now())
+  .sort((a, b) => a.data.startDate.getTime() - b.data.startDate.getTime());
+
+const departureDateRange = (start: Date, end: Date) => {
+  const day = (d: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', timeZone: 'UTC' }).format(d);
+  const monthYear = (d: Date) => new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(d);
+  const full = (d: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(d);
+  return start.getUTCMonth() === end.getUTCMonth() && start.getUTCFullYear() === end.getUTCFullYear()
+    ? `${day(start)}–${day(end)} ${monthYear(start)}`
+    : `${full(start)} – ${full(end)}`;
+};
+
 const whatsappNumber = '916002324880';
 const whatsappMessage = encodeURIComponent(`Hello! I'm interested in traveling to ${state}. Could we schedule a consultation to plan my journey?`);
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
@@ -394,6 +409,83 @@ const faqSchema = {
                     <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                     </svg>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Fixed Departures: dated, priced group journeys -->
+    {fixedDepartures.length > 0 && (
+      <section class="py-20 md:py-28 bg-stone-50 border-y border-stone-200" aria-label="Fixed departures">
+        <div class="container max-w-5xl px-6 mx-auto">
+          <div class="text-center mb-16">
+            <p class="chapter-number mb-4 animate-on-scroll">Fixed Departures</p>
+            <div class="chapter-divider mb-8 animate-on-scroll delay-100"></div>
+            <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium animate-on-scroll delay-200">
+              Join a Group Journey
+            </h2>
+            <p class="mt-6 text-stone-600 text-lg max-w-2xl mx-auto animate-on-scroll delay-300">
+              Set dates, a fixed price, and a small group of fellow travellers. Everything is arranged — you just arrive.
+            </p>
+          </div>
+
+          <div class="grid gap-6 md:gap-8">
+            {fixedDepartures.map((dep, i) => (
+              <a
+                href={`/fixed-departures/${dep.id}/`}
+                class="group grid md:grid-cols-5 overflow-hidden border border-stone-200 bg-white animate-on-scroll"
+                style={`transition-delay: ${i * 100}ms`}
+              >
+                {dep.data.heroImage && (
+                  <div class="md:col-span-2 relative overflow-hidden h-52 md:h-auto md:min-h-[16rem]">
+                    <img
+                      src={dep.data.heroImage}
+                      srcset={unsplashSrcset(dep.data.heroImage, [480, 768, 960])}
+                      sizes="(min-width: 768px) 40vw, 100vw"
+                      alt={dep.data.title}
+                      class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      width="960"
+                      height="640"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                )}
+                <div class={`p-8 flex flex-col ${dep.data.heroImage ? 'md:col-span-3' : 'md:col-span-5'}`}>
+                  <div class="flex flex-wrap items-center gap-2 mb-4">
+                    <span class="inline-flex items-center gap-1.5 bg-amber-600/10 text-amber-700 text-sm font-medium px-3 py-1 rounded-sm">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                      {departureDateRange(dep.data.startDate, dep.data.endDate)}
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 bg-stone-100 text-stone-600 text-sm px-3 py-1 rounded-sm">
+                      {dep.data.durationNights}N / {dep.data.durationDays}D
+                    </span>
+                  </div>
+
+                  <h3 class="font-playfair text-2xl text-stone-900 font-medium group-hover:text-amber-600 transition-colors">
+                    {dep.data.title}
+                  </h3>
+                  <p class="mt-3 text-stone-600 leading-relaxed flex-grow">
+                    {dep.data.tagline}
+                  </p>
+
+                  <div class="mt-6 flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-stone-100">
+                    <div class="flex items-baseline gap-2">
+                      <span class="font-playfair text-2xl text-stone-900">₹{new Intl.NumberFormat('en-IN').format(dep.data.price)}</span>
+                      <span class="text-stone-500 text-sm">{dep.data.priceNote}</span>
+                    </div>
+                    <span class="inline-flex items-center gap-2 text-amber-600 text-sm font-medium">
+                      <span>View itinerary</span>
+                      <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                      </svg>
+                    </span>
                   </div>
                 </div>
               </a>
