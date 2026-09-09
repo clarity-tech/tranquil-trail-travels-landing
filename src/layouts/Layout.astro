@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import ChatWidget from '../components/ChatWidget.astro';
+import DepartureBar from '../components/DepartureBar.astro';
+import { getCollection } from 'astro:content';
 import { siteConfig } from '../data/site';
 
 interface Props {
@@ -22,6 +24,10 @@ const {
 	seoDescription,
 	fullScreenHero = false,
 } = Astro.props;
+
+const nextDeparture = (await getCollection('fixedDepartures'))
+  .filter(d => d.data.endDate.getTime() >= Date.now())
+  .sort((a, b) => a.data.startDate.getTime() - b.data.startDate.getTime())[0];
 
 const pageTitle = seoTitle || title;
 const pageDescription = seoDescription || description;
@@ -80,14 +86,24 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
 		<slot name="head" />
 	</head>
 	<body class="bg-stone-50 font-inter text-stone-800">
+		{nextDeparture && <DepartureBar entry={nextDeparture} />}
+
 		<!-- Site Navigation -->
-		<header class:list={["fixed top-0 left-0 right-0 z-50 transition-all duration-300", !fullScreenHero && "bg-stone-900 shadow-lg"]} id="site-header" data-hero={fullScreenHero ? "true" : "false"}>
+		<header
+			class:list={["fixed left-0 right-0 z-50 transition-all duration-300", !fullScreenHero && "bg-stone-900 shadow-lg"]}
+			style="top: var(--dep-bar-h)"
+			id="site-header"
+			data-hero={fullScreenHero ? "true" : "false"}
+		>
 			<nav class="container max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
 				<a href="/" class="font-playfair text-lg md:text-xl font-medium text-white hover:text-amber-400 transition-colors">
 					Tranquil Trail Travels
 				</a>
 				<div class="flex items-center gap-6 md:gap-8">
 					<a href="/destinations/" class="text-sm tracking-wide text-stone-300 hover:text-amber-400 transition-colors">Destinations</a>
+					{nextDeparture && (
+						<a href="/fixed-departures/" class="hidden sm:inline text-sm tracking-wide text-stone-300 hover:text-amber-400 transition-colors">Departures</a>
+					)}
 					<a
 						href={`https://wa.me/916002324880?text=${encodeURIComponent("Hello! I'd like to plan a trip to Northeast India.")}`}
 						target="_blank"
@@ -117,7 +133,7 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
 				updateHeader();
 			}
 		</script>
-		<div class={fullScreenHero ? '' : 'pt-16'}>
+		<div style={fullScreenHero ? 'padding-top: var(--dep-bar-h)' : 'padding-top: calc(4rem + var(--dep-bar-h))'}>
 			<slot />
 		</div>
 		<!-- Site Footer -->

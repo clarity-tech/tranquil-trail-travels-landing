@@ -1,0 +1,64 @@
+---
+/**
+ * DepartureBar — slim, dismissible site-wide bar for the next fixed departure.
+ * Height is published as --dep-bar-h so the fixed header and the page's top
+ * padding stay in step, including after the visitor dismisses it.
+ */
+import type { CollectionEntry } from 'astro:content';
+
+interface Props { entry: CollectionEntry<'fixedDepartures'> }
+const { entry } = Astro.props;
+const { title, startDate, endDate, price } = entry.data;
+
+const day = (d: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', timeZone: 'UTC' }).format(d);
+const monthYear = (d: Date) => new Intl.DateTimeFormat('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(d);
+const dateRange = `${day(startDate)}–${day(endDate)} ${monthYear(endDate)}`;
+const priceDisplay = new Intl.NumberFormat('en-IN').format(price);
+---
+
+<div id="departure-bar" data-key={entry.id} class="fixed top-0 left-0 right-0 z-[60] bg-amber-700 text-white">
+  <div class="container max-w-6xl mx-auto px-6 h-10 flex items-center justify-center gap-3 text-sm">
+    <a href={`/fixed-departures/${entry.id}/`} class="flex items-center gap-2.5 min-w-0 hover:underline underline-offset-4">
+      <span class="hidden sm:inline text-amber-200 tracking-widest uppercase text-xs flex-shrink-0">Fixed Departure</span>
+      <span class="font-medium truncate">{title}</span>
+      <span class="text-amber-200 flex-shrink-0 hidden sm:inline" aria-hidden="true">·</span>
+      <span class="text-amber-100 flex-shrink-0 hidden sm:inline">{dateRange}</span>
+      <span class="text-amber-200 flex-shrink-0 hidden md:inline" aria-hidden="true">·</span>
+      <span class="text-amber-100 flex-shrink-0 hidden md:inline">₹{priceDisplay}</span>
+      <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+      </svg>
+    </a>
+  </div>
+  <button
+    id="departure-bar-dismiss"
+    type="button"
+    aria-label="Dismiss departure announcement"
+    class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-amber-200 hover:text-white transition-colors"
+  >
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+    </svg>
+  </button>
+</div>
+
+<script is:inline data-dep-bar>
+  (() => {
+    const KEY = 'ttt-departure-bar-dismissed';
+    const bar = document.getElementById('departure-bar');
+    if (!bar) return;
+    // Storage can throw (private mode, blocked site data) — the bar must still render.
+    let dismissed = false;
+    try { dismissed = localStorage.getItem(KEY) === bar.dataset.key; } catch {}
+    if (dismissed) {
+      bar.remove();
+      document.documentElement.classList.add('dep-bar-hidden');
+      return;
+    }
+    document.getElementById('departure-bar-dismiss')?.addEventListener('click', () => {
+      bar.remove();
+      document.documentElement.classList.add('dep-bar-hidden');
+      try { localStorage.setItem(KEY, bar.dataset.key || '1'); } catch {}
+    });
+  })();
+</script>

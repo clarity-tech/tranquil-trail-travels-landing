@@ -304,3 +304,36 @@ defined in CSS and applied by nothing; left in place as pre-existing dead style.
 - Computed-style audit confirms `cursor: pointer` on exactly the four linked nodes and `auto` on the
   other three.
 - Overflow check re-run: clean at 320–1440px.
+
+## Fixed Departures — Site-Wide Prominence (Sep 2026)
+
+The departure was reachable only from the homepage section and the Meghalaya page. This puts it on
+every page, via a hub, a nav item and a dismissible bar.
+
+### Hub (`src/pages/fixed-departures/index.astro`)
+- Lists every upcoming departure using the shared `FixedDepartureCard`. Exists because a nav item
+  needs a stable target — pointing the nav at one trip would break as soon as there is a second.
+- Real empty state: when every departure has lapsed it says so and offers WhatsApp, rather than
+  404ing or rendering an empty grid.
+
+### Bar (`src/components/DepartureBar.astro`)
+- Slim, dismissible, links straight to the trip (the nav goes to the hub — the bar promotes the one
+  live departure, the nav is the durable browse entry).
+- Dismissal is stored per departure id, so dismissing this one does not suppress a future trip's bar.
+  Every `localStorage` access is wrapped in try/catch — private mode and blocked site data throw, and
+  the bar must still render.
+- `--dep-bar-h` drives the bar height, the fixed header's `top` and the page wrapper's `padding-top`
+  together. Measured: inner pages sit at 104px with the bar and 64px without (the original `pt-16`),
+  hero pages 40px and 0px. No leftover gap after dismissal.
+
+### Nav item
+- "Departures" is `hidden sm:inline`. With it visible at mobile widths the logo wrapped to two lines
+  at 360–390px and three at 320px, pushing the header from 60px to 116px — there is no room for the
+  logo plus two links below 414px. The bar carries prominence on phones instead.
+
+### Verification
+- Bar and nav item present on all 11 pages; hub in the sitemap.
+- Auto-hide exercised by backdating the only departure: bar, nav item and homepage section all
+  disappear, and the hub renders its empty state.
+- Dismissal tested in-browser on a hero page and an inner page, including persistence across reload.
+- Overflow: 28/28 configurations clean at 320–1440px including the new hub.

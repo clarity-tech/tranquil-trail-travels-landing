@@ -422,3 +422,18 @@ body {
     animation: none;
   }
 }
+
+/* ============================================
+   DEPARTURE BAR
+   ============================================ */
+
+/* The bar, the fixed header beneath it and the page's top padding all read this
+   one value, so dismissing the bar (which sets .dep-bar-hidden on <html>)
+   collapses every offset at once instead of leaving a 40px gap. */
+:root {
+  --dep-bar-h: 2.5rem;
+}
+:root:not(:has(#departure-bar)),
+:root.dep-bar-hidden {
+  --dep-bar-h: 0rem;
+}

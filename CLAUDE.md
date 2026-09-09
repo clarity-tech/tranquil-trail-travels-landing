@@ -14,6 +14,9 @@
 - `/destinations/` - Hub page linking to 4 state-level destination pages
 - `/destinations/[id]/` - Dynamic destination pages (Assam, Arunachal Pradesh, Meghalaya, Nagaland) with hero, highlights, experiences, itineraries, FAQ, CTA sections
 - `/fixed-departures/[slug]/` - Dated, priced group departures (day-by-day, inclusions, group policy, TouristTrip + Offer schema). Linked from the parent state's destination page; past departures drop off that listing automatically and the page itself switches to a "concluded" state, both derived from `endDate` at build time.
+- `/fixed-departures/` - Hub listing all upcoming departures. Target of the header's "Departures"
+  nav item (hidden below `sm` — the logo plus two nav links does not fit at 320px). Has a real empty
+  state, so it degrades gracefully rather than 404ing once every departure lapses.
 - `/llms.txt` - AI crawler discoverability endpoint
 - Content uses Astro Content Collections (`src/content/destinations/*.md`)
 - Images: Unsplash hotlinked with responsive `srcset` via `unsplashSrcset()` helper in `[id].astro`
@@ -53,6 +56,10 @@ Full plan is in `GROWTH-PLAN.md`. Implementation order:
 - Fonts: Playfair Display (headings), Inter (body)
 - Color palette: stone + amber accents
 - Site config lives in `src/data/site.ts`
+- `--dep-bar-h` (global.css) is the single source of truth for the departure bar's height: the bar,
+  the fixed header's `top`, and the page wrapper's `padding-top` all read it, so dismissing the bar
+  (which sets `.dep-bar-hidden` on `<html>`) collapses every offset at once. If you add anything
+  pinned to the top of the viewport, offset it from this variable, not from a hard-coded 4rem.
 - Astro 7 uses the Rust compiler: it errors on unclosed tags, no longer auto-corrects invalid HTML
   nesting, and **drops the whitespace text node between sibling elements**. Never let a gap between
   two inline elements come from source whitespace — use `gap`/margin, or it will close up in the
