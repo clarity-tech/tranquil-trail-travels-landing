@@ -10,7 +10,7 @@
 - **Instagram**: https://www.instagram.com/tranquil_trail_travels
 
 ## Current Site Structure
-- `/` - Homepage with 5-chapter storytelling narrative (all images are real Unsplash photos)
+- `/` - Homepage with 5-chapter storytelling narrative (all images are real Unsplash photos). Surfaces upcoming fixed departures between the experiences and testimonials sections; that section removes itself when none are upcoming.
 - `/destinations/` - Hub page linking to 4 state-level destination pages
 - `/destinations/[id]/` - Dynamic destination pages (Assam, Arunachal Pradesh, Meghalaya, Nagaland) with hero, highlights, experiences, itineraries, FAQ, CTA sections
 - `/fixed-departures/[slug]/` - Dated, priced group departures (day-by-day, inclusions, group policy, TouristTrip + Offer schema). Linked from the parent state's destination page; past departures drop off that listing automatically and the page itself switches to a "concluded" state, both derived from `endDate` at build time.

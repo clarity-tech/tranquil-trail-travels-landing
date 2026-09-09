@@ -5,7 +5,16 @@ import SevenSistersMap from '../components/SevenSistersMap.astro';
 import CulturalMoments from '../components/CulturalMoments.astro';
 import UniqueExperiences from '../components/UniqueExperiences.astro';
 import ConsultationCTA from '../components/ConsultationCTA.astro';
+import FixedDepartureCard from '../components/FixedDepartureCard.astro';
+import { getCollection } from 'astro:content';
 import { siteConfig } from '../data/site';
+
+// Upcoming fixed departures only. Once the last one's endDate passes this list
+// is empty and the section below removes itself — the homepage returns to its
+// current shape with no manual edit.
+const upcomingDepartures = (await getCollection('fixedDepartures'))
+  .filter(dep => dep.data.endDate.getTime() >= Date.now())
+  .sort((a, b) => a.data.startDate.getTime() - b.data.startDate.getTime());
 ---
 
 <Layout title="Tranquil Trail Travels — Stories Written in Mist & Gold" fullScreenHero>
@@ -37,6 +46,32 @@ import { siteConfig } from '../data/site';
 
     <!-- Chapter 4: Unique Experiences -->
     <UniqueExperiences />
+
+    <!-- Fixed departures: the one thing on this page you can book by date -->
+    {upcomingDepartures.length > 0 && (
+      <section class="py-20 md:py-28 bg-stone-50 border-y border-stone-200" aria-label="Fixed departures">
+        <div class="container max-w-5xl px-6 mx-auto">
+          <div class="text-center mb-16 animate-on-scroll">
+            <p class="chapter-number mb-4">Fixed Departures</p>
+            <div class="chapter-divider mb-8"></div>
+            <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium">
+              Join a Group Journey
+            </h2>
+            <p class="mt-6 text-stone-600 text-lg max-w-2xl mx-auto">
+              Most of our journeys are built around you. These few are built around a date — set
+              itinerary, fixed price, and a small group of fellow travellers. Everything is arranged;
+              you just arrive.
+            </p>
+          </div>
+
+          <div class="grid gap-6 md:gap-8">
+            {upcomingDepartures.map((dep, i) => (
+              <FixedDepartureCard entry={dep} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
 
     <!-- Social proof bridge -->
     <section class="py-20 md:py-24 bg-white" aria-label="Traveler testimonials">

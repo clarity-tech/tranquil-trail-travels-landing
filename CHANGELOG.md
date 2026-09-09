@@ -250,3 +250,32 @@ card, the gap between `₹28,800` and `Per person, twin sharing` came from an HT
   the Cherrapunji hero was ruled out as Unsplash `auto=format` serving variance via a same-build
   control that rendered identically to itself.
 - Overflow check re-run on the Astro 7 build: 21/21 configurations clean.
+
+## Fixed Departures — Homepage Placement (Sep 2026)
+
+The Meghalaya departure was three clicks from the front door (home → destinations → Meghalaya →
+scroll), which is too deep for the only thing on the site you can book by date.
+
+### Shared card (`src/components/FixedDepartureCard.astro`)
+- Extracted from `[id].astro` so the destination pages and the homepage render the same card. Takes
+  the collection entry plus an index for the stagger delay. Verified as a pure refactor: the built
+  Meghalaya and departure pages are byte-identical to the previous commit.
+
+### Homepage section (`src/pages/index.astro`)
+- Placed between Unique Experiences and the testimonials — after the story has done its work, before
+  the soft close, so it neither interrupts the narrative nor competes with `ConsultationCTA`.
+- Filtered to `endDate >= now` and wrapped in `{upcomingDepartures.length > 0 && ...}`, so when the
+  last departure passes, the section removes itself and the homepage returns to its previous shape
+  with no manual edit. Verified by temporarily backdating the only departure: the homepage heading
+  and link both disappear, the Meghalaya section disappears, and the departure page still builds in
+  its concluded state.
+- No JSON-LD here on purpose. The canonical `TouristTrip` lives on the departure page; duplicating
+  it would invite Google to choose the wrong URL.
+
+### Deliberately not done
+- No `/fixed-departures/` hub page and no nav link. With one departure a hub is a thin page that adds
+  a click, and a nav item pointing at a single product breaks as soon as there is a second. Both are
+  worth revisiting when departure #2 is added.
+
+### Verification
+- Overflow check re-run: 21/21 configurations clean, homepage included, at 320–1440px.
