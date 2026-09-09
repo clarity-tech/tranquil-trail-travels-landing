@@ -6,6 +6,7 @@ Premium customized travel itineraries for Northeast India — Assam, Arunachal P
 
 - [Astro](https://astro.build/) — static site generator
 - [Tailwind CSS v4](https://tailwindcss.com/) — utility-first CSS
+- [GitHub Pages](https://pages.github.com/) — static hosting, behind Cloudflare for DNS/TLS/CDN
 
 ## Project Structure
 
@@ -42,4 +43,18 @@ Premium customized travel itineraries for Northeast India — Assam, Arunachal P
 
 ## Deployment
 
-Deployed to **GitHub Pages** with a custom domain (`tranquiltrailtravels.com`). The deploy workflow runs on push to `main`.
+Pushing to `main` **is** the deploy — there is no manual step. GitHub Actions
+(`.github/workflows/deploy.yml`) builds the site with Node 24 and publishes `dist/` to the
+`gh-pages` branch, which GitHub Pages serves. Cloudflare sits in front as DNS + CDN and
+terminates TLS for `tranquiltrailtravels.com`.
+
+```text
+push to main → GitHub Actions build → gh-pages branch → GitHub Pages → Cloudflare → tranquiltrailtravels.com
+```
+
+Changes are live roughly 1–2 minutes after the push; follow a run with
+`gh run watch --repo clarity-tech/tranquil-trail-travels-landing`. Cloudflare caches HTML for
+10 minutes (`max-age=600`), so a hard refresh or a cache purge may be needed to see an update
+right away.
+
+The `gh-pages` branch is force-rewritten on every deploy — don't commit to it directly.
