@@ -1,29 +1,60 @@
 ---
-// Chat Widget Component - Floating contact form bubble
+/**
+ * ChatWidget — floating "Let's Connect" bubble that hands off to WhatsApp.
+ *
+ * It used to build a `mailto:` and then declare success unconditionally on the
+ * next line, which meant a visitor with no mail client configured — most phone
+ * browsers, any webmail-only desktop — read "We'll connect with you shortly"
+ * while nothing was sent and nothing was recorded anywhere. This is a static
+ * site with no backend, so a lost handoff is a lost lead with no trace.
+ *
+ * WhatsApp is the site's primary channel everywhere else (header, departure
+ * bar, every trip CTA), it needs no client configuration, and it carries the
+ * visitor's own number — which is why the old required "Phone" field is gone.
+ * Asking for a number that WhatsApp supplies for free was pure friction.
+ *
+ * Nothing here claims to have delivered anything. The confirmation says
+ * WhatsApp is opening and always exposes the raw link, so a blocked popup is
+ * recoverable rather than a silent dead end.
+ */
+import { siteConfig } from '../data/site';
+
+// wa.me wants bare digits; site.ts stores the display form with a leading +.
+const waNumber = siteConfig.contact.whatsapp.replace(/\D/g, '');
+const email = siteConfig.contact.email;
 ---
 
 <!-- Chat Bubble Button -->
 <button
   id="chat-bubble"
+  type="button"
   class="chat-bubble fixed bottom-6 right-6 z-50 bg-amber-600 hover:bg-amber-700 rounded-full p-4 shadow-lg cursor-pointer transition-all duration-300"
-  aria-label="Open contact form"
+  aria-label="Message us on WhatsApp"
+  aria-expanded="false"
+  aria-controls="chat-panel"
+  data-wa-number={waNumber}
+  data-email={email}
 >
   <span class="chat-pulse"></span>
-  <svg class="w-6 h-6 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+  <!-- The WhatsApp glyph, not a generic speech bubble: the icon should promise
+       the channel the button actually opens. -->
+  <svg class="w-6 h-6 text-white relative z-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
   </svg>
 </button>
 
 <!-- Chat Panel -->
 <div
   id="chat-panel"
+  role="dialog"
+  aria-labelledby="chat-panel-title"
   class="fixed bottom-24 left-4 right-4 sm:left-auto sm:right-6 z-50 sm:w-80 bg-white rounded-xl shadow-2xl border border-stone-200 hidden"
 >
   <!-- Header -->
   <div class="bg-amber-600 text-white px-4 py-3 rounded-t-xl flex items-center justify-between">
-    <h3 class="font-playfair text-lg font-medium">Let's Connect</h3>
-    <button id="chat-close" class="hover:bg-amber-700 rounded-full p-1 transition-colors" aria-label="Close">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <h3 id="chat-panel-title" class="font-playfair text-lg font-medium">Let's Connect</h3>
+    <button id="chat-close" type="button" class="hover:bg-amber-700 rounded-full p-1 transition-colors" aria-label="Close">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
       </svg>
     </button>
@@ -31,7 +62,9 @@
 
   <!-- Form -->
   <form id="chat-form" class="p-4 space-y-4">
-    <p class="text-stone-600 text-sm">Share your details and we'll reach out to plan your journey.</p>
+    <p class="text-stone-600 text-sm">
+      Tell us who you are and we'll pick it up on WhatsApp — no need to type your number, it comes with the chat.
+    </p>
 
     <div>
       <label for="chat-name" class="block text-sm font-medium text-stone-700 mb-1">Name</label>
@@ -40,105 +73,151 @@
         id="chat-name"
         name="name"
         required
+        autocomplete="name"
         placeholder="Your name"
         class="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
       />
     </div>
 
     <div>
-      <label for="chat-phone" class="block text-sm font-medium text-stone-700 mb-1">Phone</label>
+      <label for="chat-plan" class="block text-sm font-medium text-stone-700 mb-1">
+        What are you planning? <span class="text-stone-400 font-normal">(optional)</span>
+      </label>
       <input
-        type="tel"
-        id="chat-phone"
-        name="phone"
-        required
-        placeholder="Your phone number"
+        type="text"
+        id="chat-plan"
+        name="plan"
+        placeholder="Meghalaya in December, 6 of us"
         class="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
       />
     </div>
 
     <button
       type="submit"
-      class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 rounded-lg transition-colors duration-300"
+      class="w-full flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1ebe57] text-white font-medium py-3 rounded-lg transition-colors duration-300"
     >
-      Connect with us
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+      </svg>
+      <span>Continue on WhatsApp</span>
     </button>
+
+    <!-- Not everyone has WhatsApp on the device they are browsing from. -->
+    <p class="text-center text-xs text-stone-500">
+      <a id="chat-email-link" href={`mailto:${email}`} class="underline underline-offset-2 hover:text-amber-700 transition-colors">
+        Prefer email?
+      </a>
+    </p>
   </form>
 
-  <!-- Success Message -->
+  <!-- Handoff state. Deliberately does NOT say the message was sent — we only
+       know WhatsApp was asked to open, so the link stays visible. -->
   <div id="chat-success" class="p-6 text-center hidden">
-    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
-      <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+    <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+      <svg class="w-7 h-7 text-green-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
       </svg>
     </div>
-    <h4 class="font-playfair text-lg text-stone-900 font-medium">Thank you!</h4>
-    <p class="text-stone-600 mt-2">We'll connect with you shortly.</p>
+    <h4 id="chat-success-title" class="font-playfair text-lg text-stone-900 font-medium">Opening WhatsApp…</h4>
+    <p class="text-stone-600 mt-2 text-sm">Send the message we've drafted and we'll take it from there.</p>
+    <a
+      id="chat-manual-link"
+      href="#"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-block mt-4 text-sm text-amber-700 underline underline-offset-2 hover:text-amber-800"
+    >
+      Didn't open? Tap here
+    </a>
   </div>
 </div>
 
 <script>
-  const chatBubble = document.getElementById('chat-bubble');
-  const chatPanel = document.getElementById('chat-panel');
-  const chatClose = document.getElementById('chat-close');
-  const chatForm = document.getElementById('chat-form');
-  const chatSuccess = document.getElementById('chat-success');
-  const chatName = document.getElementById('chat-name') as HTMLInputElement;
-  const chatPhone = document.getElementById('chat-phone') as HTMLInputElement;
+  const bubble = document.getElementById('chat-bubble');
+  const panel = document.getElementById('chat-panel');
+  const closeBtn = document.getElementById('chat-close');
+  const form = document.getElementById('chat-form') as HTMLFormElement | null;
+  const success = document.getElementById('chat-success');
+  const successTitle = document.getElementById('chat-success-title');
+  const manualLink = document.getElementById('chat-manual-link') as HTMLAnchorElement | null;
+  const emailLink = document.getElementById('chat-email-link') as HTMLAnchorElement | null;
+  const nameInput = document.getElementById('chat-name') as HTMLInputElement | null;
+  const planInput = document.getElementById('chat-plan') as HTMLInputElement | null;
 
-  // Toggle panel
+  const waNumber = bubble?.dataset.waNumber || '';
+  const emailTo = bubble?.dataset.email || '';
+
+  function isOpen() {
+    return !panel?.classList.contains('hidden');
+  }
+
   function openPanel() {
-    chatPanel?.classList.remove('hidden');
-    chatPanel?.classList.add('chat-panel-enter');
+    panel?.classList.remove('hidden');
+    panel?.classList.add('chat-panel-enter');
+    bubble?.setAttribute('aria-expanded', 'true');
+    // Land the caret in the first field rather than making the visitor aim.
+    nameInput?.focus();
   }
 
-  function closePanel() {
-    chatPanel?.classList.add('hidden');
-    chatPanel?.classList.remove('chat-panel-enter');
+  function closePanel(returnFocus?: boolean) {
+    panel?.classList.add('hidden');
+    panel?.classList.remove('chat-panel-enter');
+    bubble?.setAttribute('aria-expanded', 'false');
+    if (returnFocus) (bubble as HTMLButtonElement | null)?.focus();
   }
 
-  chatBubble?.addEventListener('click', () => {
-    if (chatPanel?.classList.contains('hidden')) {
-      openPanel();
-    } else {
-      closePanel();
-    }
+  function resetToForm() {
+    form?.reset();
+    form?.classList.remove('hidden');
+    success?.classList.add('hidden');
+  }
+
+  bubble?.addEventListener('click', () => {
+    if (isOpen()) closePanel();
+    else { resetToForm(); openPanel(); }
   });
 
-  chatClose?.addEventListener('click', closePanel);
+  closeBtn?.addEventListener('click', () => closePanel(true));
 
-  // Close on click outside
   document.addEventListener('click', (e) => {
     const target = e.target as Node;
-    if (!chatPanel?.contains(target) && !chatBubble?.contains(target)) {
-      closePanel();
-    }
+    if (!panel?.contains(target) && !bubble?.contains(target)) closePanel();
   });
 
-  // Form submission
-  chatForm?.addEventListener('submit', (e) => {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen()) closePanel(true);
+  });
+
+  function buildMessage() {
+    const name = nameInput?.value.trim() || '';
+    const plan = planInput?.value.trim() || '';
+    let msg = 'Hello! I am ' + name + '.';
+    if (plan) msg += ' ' + plan + '.';
+    msg += ' I would like to plan a journey in Northeast India.';
+    return msg;
+  }
+
+  // Keep the email fallback carrying the same details the visitor just typed.
+  function syncEmailLink() {
+    if (!emailLink) return;
+    const name = nameInput?.value.trim() || '';
+    const subject = 'Journey enquiry' + (name ? ' from ' + name : '');
+    emailLink.href = 'mailto:' + emailTo + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(buildMessage());
+  }
+  nameInput?.addEventListener('input', syncEmailLink);
+  planInput?.addEventListener('input', syncEmailLink);
+
+  form?.addEventListener('submit', (e) => {
     e.preventDefault();
+    const url = 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(buildMessage());
+    if (manualLink) manualLink.href = url;
 
-    const name = chatName?.value || '';
-    const phone = chatPhone?.value || '';
+    // A popup opened from a click gesture is normally allowed, but if the
+    // browser blocks it we must not pretend the handoff happened.
+    const opened = window.open(url, '_blank', 'noopener,noreferrer');
+    if (!opened && successTitle) successTitle.textContent = 'Tap to open WhatsApp';
 
-    // Create mailto link
-    const subject = encodeURIComponent(`New Contact Request from ${name}`);
-    const body = encodeURIComponent(`Name: ${name}\nPhone: ${phone}\n\nPlease contact me about travel packages.`);
-    const mailtoLink = `mailto:tranquiltrailtravels@gmail.com?subject=${subject}&body=${body}`;
-
-    // Open mailto link
-    window.location.href = mailtoLink;
-
-    // Show success message
-    chatForm?.classList.add('hidden');
-    chatSuccess?.classList.remove('hidden');
-
-    // Reset form after delay
-    setTimeout(() => {
-      chatForm?.reset();
-      chatForm?.classList.remove('hidden');
-      chatSuccess?.classList.add('hidden');
-    }, 5000);
+    form.classList.add('hidden');
+    success?.classList.remove('hidden');
   });
 </script>

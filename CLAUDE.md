@@ -7,6 +7,10 @@
 - **Brand**: Premium, luxury travel focused on Northeast India
 - **Voice**: Storytelling-first, "stories written in mist & gold" narrative style
 - **Contact model**: WhatsApp-first (+916002324880), secondary email (tranquiltrailtravels@gmail.com)
+  The floating chat bubble (`ChatWidget.astro`, in `Layout.astro`, so on every page) hands off to
+  WhatsApp — it does not send anything itself. Never make it claim a message was delivered: the
+  site is static, there is no backend, and a failed handoff would otherwise be a lead lost
+  silently. It asks for a name only; WhatsApp supplies the number.
 - **Instagram**: https://www.instagram.com/tranquil_trail_travels
 
 ## Current Site Structure
@@ -45,10 +49,19 @@ Full plan is in `GROWTH-PLAN.md`. Implementation order:
 - **Repo**: `github.com/clarity-tech/tranquil-trail-travels-landing` (public). The git remote still points at the pre-rename URL `tranquil-trail-travel-landing`; GitHub redirects it, so pushes work unchanged.
 - **Chain**: push to `main` → `.github/workflows/deploy.yml` (Node 24, `npm run build`) → `peaceiris/actions-gh-pages` publishes `dist/` to the `gh-pages` branch with a `CNAME` → GitHub Pages serves it → Cloudflare proxies it at tranquiltrailtravels.com
 - **There is no manual deploy step** — pushing to `main` is the deploy. Live in ~1-2 min. Watch it with `gh run watch --repo clarity-tech/tranquil-trail-travels-landing`
-- **Cloudflare**: nameservers `coco`/`george.ns.cloudflare.com`. Apex and `www` are proxied (orange cloud), so Cloudflare terminates TLS and does the http→https redirect. GitHub's own "Enforce HTTPS" is off — expected for a proxied domain, not a misconfiguration.
+- **Cloudflare**: nameservers `shubhi`/`mustafa.ns.cloudflare.com` (moved from `coco`/`george` in Sep 2026). Apex and `www` are proxied (orange cloud), so Cloudflare terminates TLS and does the http→https redirect. GitHub's own "Enforce HTTPS" is off — expected for a proxied domain, not a misconfiguration.
 - **Cache**: HTML is served `cache-control: max-age=600`, so a change can take up to 10 min to appear publicly unless the Cloudflare cache is purged.
 - `gh-pages` is force-rewritten on every deploy (`force_orphan: true`) — never commit to it by hand.
-- **Cloudflare zone**: which Cloudflare account holds this zone is not recorded here — needed to purge cache. TODO: fill in.
+- **Cloudflare zone**: the account holding this zone is the one reachable on the `shubhi`/`mustafa`
+  nameservers. Record the account name here next time someone logs in — needed to purge cache.
+- **Error 1000 outage, 10 Sep 2026.** The whole site returned `403 — DNS points to prohibited IP`
+  while GitHub Pages was perfectly healthy. Cause: the apex and `www` records had their **origin
+  values** set to Cloudflare's own anycast IPs (`104.21.x`, `172.67.x`, and `2606:4700::/32` on
+  AAAA), which is a loop Cloudflare refuses. Fix: point them at GitHub's `185.199.108-111.153`,
+  and `www` at a CNAME to `clarity-tech.github.io` (the **organization**, never the repo name —
+  this is a project site). Diagnosis note for next time: `dig` returns Cloudflare anycast IPs for
+  any *proxied* record, so seeing `104.21.x` in `dig` is normal and is **not** the symptom. The
+  symptom is the 403 body. Check the origin values in the dashboard, not `dig`.
 - **Do NOT set Cloudflare SSL mode to Full (strict)** — it would 526 the site. GitHub has never issued a cert for the custom domain (`https_enforced: false`), and the Pages origin presents only `*.github.io`; verify with
   `curl -sSI --resolve tranquiltrailtravels.com:443:185.199.108.153 https://tranquiltrailtravels.com/`. The zone must stay on Full (non-strict). Making strict possible means grey-clouding the DNS until GitHub provisions HTTPS, then re-proxying.
 - **Open item**: HSTS is disabled at the edge (`strict-transport-security: max-age=0`). Safe to enable in Cloudflare → SSL/TLS → Edge Certificates; it affects browser↔Cloudflare only, not the origin.

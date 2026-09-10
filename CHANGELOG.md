@@ -438,3 +438,43 @@ the only filter; judge each post before adding it.
 
 Known and accepted: like counts (5, 13, 36, 17, 11) are structural to the embed and cannot be styled
 away, and the post list is hand-maintained — new posts do not appear on their own.
+
+---
+
+## Chat Widget: WhatsApp Handoff (Sep 2026)
+
+### The bug
+`ChatWidget.astro` collected a name and phone, built a `mailto:`, assigned it to
+`window.location.href`, and then on the very next line — unconditionally, synchronously —
+swapped the form for "Thank you! We'll connect with you shortly."
+
+It could not know whether a mail client existed, whether it opened, or whether the visitor
+ever pressed Send. On a phone browser or a webmail-only desktop, the visitor read a success
+message while nothing was sent. Nothing was recorded anywhere either: the site is static,
+there is no backend and no form service. Every one of those leads was lost without a trace,
+on the only lead-capture surface on the site, present on all 11 pages.
+
+### The fix
+- Hands off to WhatsApp, the site's primary channel everywhere else (header, departure bar,
+  every trip CTA). No client configuration, works on mobile, and the visitor's number arrives
+  with the chat.
+- **The required "Phone" field is gone** — WhatsApp supplies the number, so asking for it was
+  friction on the one form that matters. Replaced with an optional "What are you planning?"
+  that makes the prefilled message useful ("Meghalaya in December, 6 of us").
+- **Nothing claims delivery.** The confirmation says "Opening WhatsApp…", not "Thank you", and
+  always shows the raw link. If `window.open` returns null (blocked popup) the heading becomes
+  "Tap to open WhatsApp" instead, so a blocked handoff is recoverable rather than a silent
+  dead end.
+- The bubble icon is now the WhatsApp glyph rather than a generic speech bubble — it should
+  promise the channel it actually opens.
+- `mailto:` survives as a clearly-labelled "Prefer email?" fallback, kept in sync with whatever
+  the visitor has typed.
+
+### Accessibility, fixed in passing
+`role="dialog"` and `aria-labelledby`; Escape closes and returns focus to the bubble;
+`aria-expanded` tracks state; opening focuses the name field.
+
+### Verification
+24/24 checks green — 6 routes x 4 widths (320/390/768/1280): panel opens, submit produces a
+`https://wa.me/916002324880?text=` URL, the success copy never claims the message was sent,
+zero horizontal overflow, no JS errors. Blocked-popup path asserted separately.
