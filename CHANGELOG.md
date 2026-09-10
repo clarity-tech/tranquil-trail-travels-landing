@@ -377,3 +377,64 @@ pointing at the wrong line. Flattened to concatenation; recorded in CLAUDE.md.
 Left alone on purpose: the homepage (96% to its first WhatsApp CTA, but its departure card sits
 mid-page and leads to a trip page that now converts above the fold) and the Meghalaya page (82%,
 already carrying five CTAs). Both stay editorial rather than gaining a hard sell.
+
+---
+
+## Instagram on the Homepage (Sep 2026)
+
+A "Field Notes" section between the testimonials and the consultation CTA, showing the account's
+five most recent posts through Instagram's own embed. Reels play in place, carousels swipe, and the
+media, captions and location tags come from Instagram at full resolution — nothing is copied into
+the repo and nothing goes stale when a post is edited.
+
+### Routes not taken, and why
+- **Scraping the profile** — Instagram returns a JS shell with `401 require_login` to anything that
+  is not a logged-in browser. Dead.
+- **Tokenless oEmbed for thumbnails** — Meta dropped the access-token requirement on
+  `instagram_oembed` in June 2026, and the endpoint does answer unauthenticated. But called against
+  real posts it returns only the grey `<blockquote>` loading skeleton: no `thumbnail_url`, no
+  media. It can confirm a post exists; it cannot give you an image. Dead for this purpose.
+- **A curated grid of local images** — built and kept as `InstagramFeed.astro` (see below). It is
+  the only version with no third-party JavaScript, but the images have to be sourced by hand.
+- **Instagram Graph API** — the only route that keeps the *selection* current rather than just each
+  post. Needs a Business/Creator account and a refreshable long-lived token. Not done; still open.
+
+### `src/components/InstagramEmbeds.astro`
+- Blockquotes are in the HTML; `embed.js` is not. A 1,494-byte inline bootstrap injects it from an
+  IntersectionObserver 600px ahead of the section, so nobody who stops above it pays anything.
+- Instagram hard-codes `min-width: 326px` on both the blockquote and the iframe it swaps in. At a
+  320px viewport that is wider than the column and reintroduces the horizontal overflow fixed in
+  `f5bd718`. The `!important` override in the global style block is that fix — **do not remove it.**
+- Mobile is a scroll-snap carousel, not a stack: five embeds stacked measured 4,408px, about five
+  and a half screens, which pushed the consultation CTA back down after `fcc1548` lifted it.
+  One card in view, next peeking. 4,408px → 1,145px.
+- Desktop is wrapping flexbox rather than grid so a trailing row centres — with five posts in three
+  columns, grid would leave a hole that reads as a failed tile.
+- Slots reserve `min-height: 32rem` against layout shift, released per-slot once the iframe reports
+  its height (verified: zero gap under all five).
+- If Instagram's script is blocked, the blockquote never hydrates, so the markup *inside* it is what
+  the reader sees — hence a real link and caption rather than an empty box.
+
+### `src/components/InstagramFeed.astro` — parked, not rendered
+The curated alternative: local images, our typography, no third-party JavaScript. Kept because it is
+the only version that costs nothing at all. To switch back, import it in `index.astro` and give each
+post in `src/data/instagram.ts` an `image` under `public/instagram/`.
+
+### Editorial
+The 28 Aug 2026 carousel is deliberately excluded — it is a "Sorry We Ghosted!!" card apologising for
+having stopped posting, which undercuts a section headed "The Trail, As It Happens". Recency is not
+the only filter; judge each post before adding it.
+
+### Verification
+- **Initial load: 0 Instagram requests, 0 KB**, at 320/390/768/1280. The feature adds 6,883 bytes of
+  HTML (5 blockquotes = 2,055 of it).
+- **After scrolling to the section: 237 requests, 5,261 KB** — measured with site isolation disabled,
+  since a parent-page measurement cannot see inside cross-origin iframes and under-reports it as
+  34 KB. That is ~2.5x the rest of the homepage (2,031 KB fully scrolled). Deferred, but real.
+- 5/5 embeds hydrate at every width; zero horizontal overflow at 320/390/768/1280 before and after
+  swiping the carousel; blocked-script fallback shows 5/5 captioned links.
+- Trailing row centring confirmed: 1280px → rows of 3+2, left gap 188px = right gap 188px;
+  768px → 2+2+1, 186px = 186px.
+
+Known and accepted: like counts (5, 13, 36, 17, 11) are structural to the embed and cannot be styled
+away, and the post list is hand-maintained — new posts do not appear on their own.

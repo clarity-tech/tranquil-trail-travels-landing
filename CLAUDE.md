@@ -11,6 +11,10 @@
 
 ## Current Site Structure
 - `/` - Homepage with 5-chapter storytelling narrative (all images are real Unsplash photos). Surfaces upcoming fixed departures between the experiences and testimonials sections; that section removes itself when none are upcoming.
+  Below the testimonials, a "Field Notes" band renders the latest Instagram posts via Instagram's
+  own embed (`InstagramEmbeds.astro`); `embed.js` is injected lazily on scroll, so initial load costs
+  0 Instagram requests. The post list in `src/data/instagram.ts` is hand-maintained — new posts do
+  not appear on their own. Emptying that array hides the section.
 - `/destinations/` - Hub page linking to 4 state-level destination pages
 - `/destinations/[id]/` - Dynamic destination pages (Assam, Arunachal Pradesh, Meghalaya, Nagaland) with hero, highlights, experiences, itineraries, FAQ, CTA sections
 - `/fixed-departures/[slug]/` - Dated, priced group departures (day-by-day, inclusions, group policy, TouristTrip + Offer schema). Linked from the parent state's destination page; past departures drop off that listing automatically and the page itself switches to a "concluded" state, both derived from `endDate` at build time.
@@ -60,6 +64,16 @@ Full plan is in `GROWTH-PLAN.md`. Implementation order:
   the fixed header's `top`, and the page wrapper's `padding-top` all read it, so dismissing the bar
   (which sets `.dep-bar-hidden` on `<html>`) collapses every offset at once. If you add anything
   pinned to the top of the viewport, offset it from this variable, not from a hard-coded 4rem.
+- Instagram embeds hard-code `min-width: 326px` on the blockquote **and** on the iframe they swap in.
+  Below ~370px of column that is wider than the page and brings back the horizontal overflow fixed
+  in `f5bd718`. The `!important` override in `InstagramEmbeds.astro`'s global style block is the
+  fix — do not remove it, and re-check overflow at 320px after touching that component.
+- Do not reach for Meta's tokenless `instagram_oembed` to fetch post thumbnails. The endpoint answers
+  unauthenticated (Meta dropped the token requirement in June 2026) but returns only the grey
+  loading skeleton — no `thumbnail_url`, no media. Tested against real posts on 2026-09-10.
+- Measuring embed weight from the parent page under-reports it badly, because cross-origin iframe
+  traffic is invisible there. Run Chrome with `--disable-site-isolation-trials
+  --disable-features=IsolateOrigins,site-per-process` to see the real figure (34 KB vs 5,261 KB).
 - Astro 7 uses the Rust compiler: it errors on unclosed tags, no longer auto-corrects invalid HTML
   nesting, and **drops the whitespace text node between sibling elements**. Never let a gap between
   two inline elements come from source whitespace — use `gap`/margin, or it will close up in the

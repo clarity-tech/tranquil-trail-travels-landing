@@ -1,0 +1,129 @@
+---
+/**
+ * InstagramFeed — NOT CURRENTLY RENDERED. The homepage uses InstagramEmbeds
+ * instead; this is the parked alternative, kept because it is the only version
+ * that ships no third-party JavaScript and no Instagram chrome. To switch back,
+ * import it in src/pages/index.astro and give each post in src/data/instagram.ts
+ * an `image` pointing at a local file under public/instagram/.
+ *
+ * Curated Instagram posts rendered in our own type and colour.
+ *
+ * Deliberately NOT Instagram's own embed. That path needs their 34KB embed.js
+ * plus an iframe per post, drags in their profile chrome and like buttons, and
+ * renders a "this post may be broken" card whenever their script is blocked —
+ * which reads as cheaper than the surrounding page, not livelier. Tiles here are
+ * plain <img> in a grid: no third-party JavaScript, no layout shift, and the
+ * link still lands on the real post.
+ *
+ * Tiles are 3:4, not square: this account posts 9:16 reels with text burned
+ * into the frame, and a square crop cuts those captions in half.
+ *
+ * Hides itself when there are no posts, the same contract as the departures
+ * section, so emptying src/data/instagram.ts switches it off cleanly.
+ */
+import { instagramPosts } from '../data/instagram';
+import { siteConfig } from '../data/site';
+
+interface Props {
+  /**
+   * "ribbon" — one compact band of small squares; cheapest in page height.
+   * "grid"   — classic 3-across Instagram block; captions are legible on hover.
+   */
+  layout?: 'ribbon' | 'grid';
+  heading?: string;
+}
+const { layout = 'ribbon', heading = 'The Trail, As It Happens' } = Astro.props;
+
+// `image` is optional on the shared post type — the embed renderer does not
+// need one. This renderer does, so it only shows posts that actually have a
+// local file behind them rather than emitting a broken <img>.
+const posts = instagramPosts.filter((p): p is typeof p & { image: string } => Boolean(p.image));
+const handle = siteConfig.contact.instagram.replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '');
+
+// Six across only earns its keep on a wide viewport; below that the ribbon and
+// the grid converge on the same two- and three-column shapes.
+const gridCols =
+  layout === 'ribbon'
+    ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
+    : 'grid-cols-2 sm:grid-cols-3';
+// The ribbon's tiles are ~180px wide, too small for a caption to be readable.
+const showCaption = layout === 'grid';
+---
+
+{posts.length > 0 && (
+  <section class="py-20 md:py-28 bg-stone-50 border-t border-stone-200" aria-label="Instagram highlights">
+    <div class="container max-w-6xl px-6 mx-auto">
+      <div class="text-center mb-12 md:mb-16 animate-on-scroll">
+        <p class="chapter-number mb-4">Field Notes</p>
+        <div class="chapter-divider mb-8"></div>
+        <h2 class="font-playfair text-3xl md:text-4xl text-stone-900 font-medium">{heading}</h2>
+        <p class="mt-6 text-stone-600 text-lg max-w-2xl mx-auto">
+          Reels and postcards from the road, posted as we go — Shillong's backstreets, the
+          markets of the hills, the long drive north.
+        </p>
+      </div>
+
+      <div class:list={["grid gap-2 sm:gap-3", gridCols]}>
+        {posts.map((post, i) => (
+          <a
+            href={post.permalink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group relative block aspect-[3/4] overflow-hidden bg-stone-200 animate-on-scroll"
+            style={`transition-delay: ${i * 80}ms`}
+          >
+            <img
+              src={post.image}
+              alt={post.alt}
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
+              decoding="async"
+              width="600"
+              height="600"
+            />
+
+            {/* Type glyph — a reel and a carousel should be readable before the click */}
+            {post.type !== 'image' && (
+              <span class="absolute top-2 right-2 text-white drop-shadow-md" aria-hidden="true">
+                {post.type === 'reel' ? (
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                ) : (
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <rect x="7" y="7" width="13" height="13" rx="1.5" />
+                    <path d="M4 16V5a1 1 0 011-1h11" />
+                  </svg>
+                )}
+              </span>
+            )}
+
+            <span class="sr-only">{post.type === 'reel' ? 'Reel: ' : ''}{post.caption} — opens Instagram in a new tab</span>
+
+            <div class="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-stone-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+            {showCaption && (
+              <p class="absolute inset-x-0 bottom-0 p-4 text-white text-sm leading-snug opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition duration-300" aria-hidden="true">
+                {post.caption}
+              </p>
+            )}
+          </a>
+        ))}
+      </div>
+
+      <div class="mt-10 text-center animate-on-scroll">
+        <a
+          href={siteConfig.contact.instagram}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-3 px-5 sm:px-7 py-3.5 border border-stone-300 hover:border-amber-600 hover:text-amber-700 text-stone-700 transition-colors tracking-wide text-sm sm:text-base whitespace-nowrap"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98C.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+          </svg>
+          <span>Follow @{handle}</span>
+        </a>
+      </div>
+    </div>
+  </section>
+)}

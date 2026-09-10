@@ -6,6 +6,7 @@ import CulturalMoments from '../components/CulturalMoments.astro';
 import UniqueExperiences from '../components/UniqueExperiences.astro';
 import ConsultationCTA from '../components/ConsultationCTA.astro';
 import FixedDepartureCard from '../components/FixedDepartureCard.astro';
+import InstagramEmbeds from '../components/InstagramEmbeds.astro';
 import { getCollection } from 'astro:content';
 import { siteConfig } from '../data/site';
 
@@ -112,6 +113,9 @@ const upcomingDepartures = (await getCollection('fixedDepartures'))
         </div>
       </div>
     </section>
+
+    <!-- Social proof, continued: the account is the living half of it -->
+    <InstagramEmbeds />
 
     <!-- Chapter 5: Your Story Begins (Consultation CTA) -->
     <ConsultationCTA />
