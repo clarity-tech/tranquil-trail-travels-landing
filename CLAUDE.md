@@ -63,4 +63,7 @@ Full plan is in `GROWTH-PLAN.md`. Implementation order:
 - Astro 7 uses the Rust compiler: it errors on unclosed tags, no longer auto-corrects invalid HTML
   nesting, and **drops the whitespace text node between sibling elements**. Never let a gap between
   two inline elements come from source whitespace — use `gap`/margin, or it will close up in the
-  build. Requires Node >= 22.12 (CI is on 24).
+  build. Requires Node >= 22.12 (CI is on 24). It also rejects a **multi-line nested template
+  literal inside `${...}`** that the Go compiler accepted — it fails with `Expected } but found :`
+  and reports the wrong line, so trust the file over the location. Flatten to concatenation or a
+  single line.

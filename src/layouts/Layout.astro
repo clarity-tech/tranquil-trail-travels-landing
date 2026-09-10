@@ -86,7 +86,7 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
 		<slot name="head" />
 	</head>
 	<body class="bg-stone-50 font-inter text-stone-800">
-		{nextDeparture && <DepartureBar entry={nextDeparture} />}
+		{nextDeparture && <DepartureBar entry={nextDeparture} onOwnPage={Astro.url.pathname === `/fixed-departures/${nextDeparture.id}/`} />}
 
 		<!-- Site Navigation -->
 		<header

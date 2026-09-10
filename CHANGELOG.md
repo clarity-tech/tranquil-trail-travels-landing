@@ -337,3 +337,43 @@ every page, via a hub, a nav item and a dismissible bar.
   disappear, and the hub renders its empty state.
 - Dismissal tested in-browser on a hero page and an inner page, including persistence across reload.
 - Overflow: 28/28 configurations clean at 320–1440px including the new hub.
+
+## Conversion — CTAs on the Departure Path (Sep 2026)
+
+Measured before changing anything. On the page selling eleven seats at a fixed price, the first
+call to action sat at **96% scroll depth — 18 screens on mobile, 11 on desktop** — and nothing was
+actionable above the fold. The hub had **zero** CTAs while departures existed (its only one lived in
+the empty state). The bar, rendered site-wide, linked to the page you were already reading when you
+were on the trip page, wasting the most valuable strip on the highest-intent page.
+
+### Trip page (`src/pages/fixed-departures/[slug].astro`)
+- Hero CTA under the price badges: "Reserve Your Seat" (WhatsApp), with a secondary
+  "See the Itinerary" anchoring to a new `#day-by-day` target so the CTA does not block readers who
+  want to browse first. Label follows state — "Join the Waitlist" when sold out, "Ask About Next
+  Dates" once past.
+
+### Bar (`src/components/DepartureBar.astro`)
+- Takes `onOwnPage`; the layout passes `Astro.url.pathname === /fixed-departures/{id}/`. On that
+  page the bar stops being a promo link and becomes the booking action — price, dates, and a
+  "Reserve Your Seat" button — which removes the self-link and gives a 16,000px page a persistent CTA.
+
+### Hub (`src/pages/fixed-departures/index.astro`)
+- A "None of these dates work?" block with a WhatsApp CTA when departures exist, for the visitor who
+  wants a group journey but not these dates. Previously a dead end.
+
+### Astro 7 note
+The booking message was first written as a multi-line nested template literal inside `${...}`. The
+Rust compiler rejects that (the Go compiler accepted it), failing with `Expected } but found :` and
+pointing at the wrong line. Flattened to concatenation; recorded in CLAUDE.md.
+
+### Verification
+- Re-measured: trip page first CTA moved from 96% / 18 screens to **5% and above the fold** (6% on
+  desktop). Hub from 0 CTAs to 1.
+- Bar CTA sampled at every 20% of scroll depth on the 16,016px trip page: in viewport at `top=4px`
+  at all six positions.
+- Bar mode audited per page — booking on the trip page only, promo everywhere else, self-link gone.
+- Overflow: 28/28 configurations clean at 320–1440px.
+
+Left alone on purpose: the homepage (96% to its first WhatsApp CTA, but its departure card sits
+mid-page and leads to a trip page that now converts above the fold) and the Meghalaya page (82%,
+already carrying five CTAs). Both stay editorial rather than gaining a hard sell.
