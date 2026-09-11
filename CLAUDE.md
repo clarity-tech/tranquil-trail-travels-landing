@@ -88,7 +88,12 @@ Full plan is in `GROWTH-PLAN.md`. Implementation order:
 ## Technical Notes
 - Build script: `astro build && cp dist/sitemap-index.xml dist/sitemap.xml`
 - Sitemap auto-generates via @astrojs/sitemap - new pages are included automatically
-- robots.txt points to `/sitemap.xml` (fixed Feb 2026)
+- robots.txt points to `/sitemap.xml` (fixed Feb 2026) and carries a `Content-Signal:` line
+  (`search=yes, ai-input=yes`) declaring how AI systems may use the content after fetching it.
+  `ai-train` is **deliberately absent** — an unstated signal means no preference expressed, and
+  the owner chose to leave that open rather than publish a permission. Do not add it without
+  asking. Related: do not switch on Cloudflare's *managed* robots.txt, which would override this
+  file and defaults to `ai-train=no`.
 - Fonts: Playfair Display (headings), Inter (body)
 - Color palette: stone + amber accents
 - Site config lives in `src/data/site.ts`, including `ogImage` — the site-wide social/OG fallback.

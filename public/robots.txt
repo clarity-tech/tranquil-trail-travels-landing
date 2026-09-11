@@ -1,3 +1,15 @@
+# Content Signals declare how this site's content may be used *after* it is
+# fetched. See https://contentsignals.org. Compliance is voluntary; this is a
+# stated preference, not an enforcement mechanism.
+#
+#   search    = appear in a search index and link back here
+#   ai-input  = be used as a live source for an AI answer (RAG, AI Overviews)
+#
+# `ai-train` is deliberately omitted: an unstated signal means no preference
+# expressed, which neither grants nor withholds permission to train on this
+# content. It is left open on purpose — decide it before setting it.
+Content-Signal: search=yes, ai-input=yes
+
 User-agent: *
 Allow: /
 
@@ -5,3 +17,4 @@ Sitemap: https://tranquiltrailtravels.com/sitemap.xml
 
 # Structured summary of this site for AI assistants and agents: https://llmstxt.org
 # https://tranquiltrailtravels.com/llms.txt
+# Every page also has a markdown twin: replace the trailing slash with .md
