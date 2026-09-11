@@ -41,13 +41,8 @@ const section = (heading: string, body: string | null) =>
 
 const list = (items: readonly string[]) => items.map((i) => `- ${i}`).join("\n");
 
-const subsections = (
-  items: readonly { title: string; description: string }[],
-  suffix?: (item: never) => string
-) =>
-  items
-    .map((item) => `### ${item.title}${suffix ? suffix(item as never) : ""}\n\n${item.description}`)
-    .join("\n\n");
+const subsections = (items: readonly { title: string; description: string }[]) =>
+  items.map((item) => `### ${item.title}\n\n${item.description}`).join("\n\n");
 
 const faqs = (items: readonly { question: string; answer: string }[]) =>
   items.map((f) => `### ${f.question}\n\n${f.answer}`).join("\n\n");
@@ -167,6 +162,9 @@ export function fixedDepartureMarkdown(entry: CollectionEntry<"fixedDepartures">
   );
 }
 
+/** The header is documentation, not configuration: this is a static build, so
+ *  Astro writes these to disk and the host assigns the content type from the
+ *  `.md` extension. Stated anyway so `astro dev` serves them correctly. */
 export const markdownResponse = (body: string) =>
   new Response(body, {
     headers: { "Content-Type": "text/markdown; charset=utf-8" },
