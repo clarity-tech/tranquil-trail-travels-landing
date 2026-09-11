@@ -4,6 +4,14 @@ export const siteConfig = {
   description:
     "Premium customized travel itineraries for Northeast India — Assam, Arunachal Pradesh, Meghalaya & Nagaland. Luxury journeys crafted for the discerning traveler.",
   url: "https://tranquiltrailtravels.com",
+  /**
+   * Site-wide fallback for og:image / twitter:image. It is the homepage hero
+   * (HeroDawn.astro) so a shared link shows what a visitor actually lands on.
+   * Absolute on purpose — there is no local OG asset, and `/og-image.jpg`
+   * used to 404 on every page that did not pass its own hero.
+   */
+  ogImage:
+    "https://images.unsplash.com/photo-1689751439845-e57c1fab564d?auto=format&fit=crop&crop=entropy&q=80&w=1200",
   destinations: [
     {
       name: "Assam",

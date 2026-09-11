@@ -18,7 +18,7 @@ interface Props {
 const {
 	title,
 	description = siteConfig.description,
-	ogImage = '/og-image.jpg',
+	ogImage = siteConfig.ogImage,
 	canonicalUrl,
 	seoTitle,
 	seoDescription,
@@ -47,6 +47,9 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
 		<!-- Canonical URL -->
 		<link rel="canonical" href={canonical} />
 
+		<!-- llms.txt has no discovery mechanism of its own; advertise it. -->
+		<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+
 		<!-- Favicons -->
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -66,15 +69,62 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
 		<meta name="twitter:description" content={pageDescription} />
 		<meta name="twitter:image" content={ogImageUrl} />
 
-		<!-- JSON-LD Structured Data -->
+		<!--
+			JSON-LD Structured Data.
+			One @graph with stable @ids so per-page schemas (TouristDestination,
+			TouristTrip, FAQPage...) can point at the same organisation instead of
+			each redeclaring it. Contact details come from siteConfig so the
+			machine-readable copy can never drift from the mailto:/wa.me links.
+		-->
 		<script type="application/ld+json" set:html={JSON.stringify({
 			"@context": "https://schema.org",
-			"@type": "TravelAgency",
-			"name": siteConfig.name,
-			"url": siteConfig.url,
-			"description": siteConfig.description,
-			"areaServed": siteConfig.destinations.map(d => ({ "@type": "AdministrativeArea", "name": d.state })),
-			"sameAs": [siteConfig.contact.instagram]
+			"@graph": [
+				{
+					"@type": "TravelAgency",
+					"@id": `${siteConfig.url}/#organization`,
+					"name": siteConfig.name,
+					"url": siteConfig.url,
+					"description": siteConfig.description,
+					"slogan": siteConfig.tagline,
+					"image": siteConfig.ogImage,
+					"email": siteConfig.contact.email,
+					"telephone": siteConfig.contact.whatsapp,
+					"address": { "@type": "PostalAddress", "addressCountry": "IN" },
+					"areaServed": siteConfig.destinations.map(d => ({ "@type": "AdministrativeArea", "name": d.state })),
+					"contactPoint": [
+						{
+							"@type": "ContactPoint",
+							"contactType": "customer support",
+							"email": siteConfig.contact.email,
+							"telephone": siteConfig.contact.whatsapp,
+							"url": `https://wa.me/${siteConfig.contact.whatsapp.replace(/\D/g, '')}`,
+							"availableLanguage": "English",
+							"areaServed": "Worldwide"
+						}
+					],
+					"sameAs": [siteConfig.contact.instagram]
+				},
+				{
+					"@type": "WebSite",
+					"@id": `${siteConfig.url}/#website`,
+					"url": siteConfig.url,
+					"name": siteConfig.name,
+					"description": siteConfig.description,
+					"inLanguage": "en-IN",
+					"publisher": { "@id": `${siteConfig.url}/#organization` }
+				},
+				{
+					"@type": "WebPage",
+					"@id": `${canonical}#webpage`,
+					"url": canonical,
+					"name": pageTitle,
+					"description": pageDescription,
+					"isPartOf": { "@id": `${siteConfig.url}/#website` },
+					"about": { "@id": `${siteConfig.url}/#organization` },
+					"primaryImageOfPage": ogImageUrl,
+					"inLanguage": "en-IN"
+				}
+			]
 		})} />
 
 		<!-- Google Fonts: Playfair Display + Inter (optimized weights) -->

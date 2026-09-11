@@ -25,7 +25,11 @@
 - `/fixed-departures/` - Hub listing all upcoming departures. Target of the header's "Departures"
   nav item (hidden below `sm` — the logo plus two nav links does not fit at 320px). Has a real empty
   state, so it degrades gracefully rather than 404ing once every departure lapses.
-- `/llms.txt` - AI crawler discoverability endpoint
+- `/llms.txt` - AI/agent discoverability endpoint (`src/pages/llms.txt.ts`), in the llmstxt.org
+  link-map format. Generated from the content collections, so new destinations, places and
+  departures appear on their own; upcoming departures are filtered on `endDate` exactly as the
+  hub and the bar are. Advertised via `<link rel="alternate" type="text/plain">` in `Layout.astro`
+  and a pointer comment in `robots.txt` — it has no discovery mechanism of its own.
 - Content uses Astro Content Collections (`src/content/destinations/*.md`)
 - Images: Unsplash hotlinked with responsive `srcset` via `unsplashSrcset()` helper in `[id].astro`
 
@@ -72,7 +76,19 @@ Full plan is in `GROWTH-PLAN.md`. Implementation order:
 - robots.txt points to `/sitemap.xml` (fixed Feb 2026)
 - Fonts: Playfair Display (headings), Inter (body)
 - Color palette: stone + amber accents
-- Site config lives in `src/data/site.ts`
+- Site config lives in `src/data/site.ts`, including `ogImage` — the site-wide social/OG fallback.
+  It is an absolute Unsplash URL (the homepage hero), not a local file: there is no OG asset in
+  `public/`, and the old `/og-image.jpg` default 404'd on every page that did not pass its own hero.
+- `Layout.astro` emits one JSON-LD `@graph` (TravelAgency + WebSite + WebPage) with stable `@id`s
+  anchored on `siteConfig.url`. Contact fields read from `siteConfig.contact`, so the
+  machine-readable copy cannot drift from the `mailto:`/`wa.me` links. Per-page schemas
+  (TouristDestination, TouristTrip, FAQPage, BreadcrumbList) stay in their own page files.
+- The sitemap deliberately has **no** `lastmod`. Accurate per-page dates are not available at build
+  time: the collections carry no `updatedDate`, and CI checks out shallow (`actions/checkout` with
+  no `fetch-depth`), so per-file git dates and mtimes are both just "now". Stamping build time on
+  every URL claims the whole site changed on each deploy, which is the kind of unreliable signal
+  crawlers learn to ignore. To do it properly, add `updatedDate` to the collection schemas and
+  `serialize` from it.
 - `--dep-bar-h` (global.css) is the single source of truth for the departure bar's height: the bar,
   the fixed header's `top`, and the page wrapper's `padding-top` all read it, so dismissing the bar
   (which sets `.dep-bar-hidden` on `<html>`) collapses every offset at once. If you add anything

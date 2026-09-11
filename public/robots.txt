@@ -2,3 +2,6 @@ User-agent: *
 Allow: /
 
 Sitemap: https://tranquiltrailtravels.com/sitemap.xml
+
+# Structured summary of this site for AI assistants and agents: https://llmstxt.org
+# https://tranquiltrailtravels.com/llms.txt
