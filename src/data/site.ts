@@ -31,7 +31,7 @@ export const siteConfig = {
     },
   ],
   contact: {
-    email: "tranquiltrailtravels@gmail.com",
+    email: "contact@tranquiltrailtravels.com",
     whatsapp: "+916002324880",
     instagram: "https://www.instagram.com/tranquil_trail_travels",
   },

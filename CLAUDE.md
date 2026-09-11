@@ -6,7 +6,7 @@
 - **Deployed**: GitHub Pages (`gh-pages` branch) via GitHub Actions, fronted by Cloudflare for DNS/TLS — see Hosting & Deployment
 - **Brand**: Premium, luxury travel focused on Northeast India
 - **Voice**: Storytelling-first, "stories written in mist & gold" narrative style
-- **Contact model**: WhatsApp-first (+916002324880), secondary email (tranquiltrailtravels@gmail.com)
+- **Contact model**: WhatsApp-first (+916002324880), secondary email (contact@tranquiltrailtravels.com)
   The floating chat bubble (`ChatWidget.astro`, in `Layout.astro`, so on every page) hands off to
   WhatsApp — it does not send anything itself. Never make it claim a message was delivered: the
   site is static, there is no backend, and a failed handoff would otherwise be a lead lost
