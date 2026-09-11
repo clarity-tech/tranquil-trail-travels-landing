@@ -150,6 +150,10 @@ export const GET: APIRoute = async () => {
     `Every itinerary is custom-built and privately guided; trips are planned directly with ` +
     `a human over WhatsApp or email rather than booked online. Fixed departures are the ` +
     `exception — those are dated, priced, small-group trips with a published day-by-day plan.\n\n` +
+    `Every page below also has a clean markdown version: replace the trailing slash with \`.md\`, ` +
+    `or use \`index.md\` for the three index pages (e.g. /destinations/assam/ -> ` +
+    `/destinations/assam.md, /destinations/ -> /destinations/index.md). Each HTML page links ` +
+    `its own with \`rel="alternate" type="text/markdown"\`.\n\n` +
     `${sections.join("\n\n")}\n`;
 
   return new Response(body, {

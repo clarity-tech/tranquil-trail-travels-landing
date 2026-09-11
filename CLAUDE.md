@@ -31,8 +31,20 @@
   hub and the bar are. Advertised via `<link rel="describedby">` in `Layout.astro` and a pointer comment in
   `robots.txt` — it has no discovery mechanism of its own. The relation is fixed by the
   llmstxt.org v2 spec: `describedby` points at the covering llms.txt, while
-  `rel="alternate" type="text/markdown"` is reserved for a page's own `.md` version (which
-  this site does not serve yet). Do not swap them.
+  `rel="alternate" type="text/markdown"` points at a page's own `.md` twin. Do not swap them.
+- **Every page has a markdown twin** at the same path with the trailing slash replaced by `.md`
+  (`/destinations/assam/` → `/destinations/assam.md`); the three index routes keep their directory
+  and take `/index.md`. Routes are the `*.md.ts` endpoints under `src/pages/`; the composition
+  lives in `src/utils/markdown-view.ts`. `Layout.astro` derives each page's twin from the pathname,
+  so a **new hub route must be added to its `INDEX_ROUTES` set** or the page will advertise a `.md`
+  that 404s.
+  These views are **composed from frontmatter, not dumps of `entry.body`**. The markdown body of a
+  content file is only the narrative opening — three or four paragraphs. Best time to visit,
+  highlights, experiences, itineraries, practical info, prices, day-by-day plans and FAQs all live
+  in frontmatter and are assembled by the `.astro` templates. Serving `entry.body` alone would look
+  plausible and silently drop every practical fact on the page. So when you add a section to a
+  template, add it to the matching builder too, and re-check that the eleven `.md` files still
+  match the eleven HTML pages one-to-one.
 - Content uses Astro Content Collections (`src/content/destinations/*.md`)
 - Images: Unsplash hotlinked with responsive `srcset` via `unsplashSrcset()` helper in `[id].astro`
 

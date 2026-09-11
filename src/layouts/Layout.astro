@@ -33,6 +33,15 @@ const pageTitle = seoTitle || title;
 const pageDescription = seoDescription || description;
 
 const canonical = canonicalUrl || new URL(Astro.url.pathname, Astro.site).href;
+
+// Markdown twin of this page (llmstxt.org v2). Index routes keep their
+// directory and take /index.md; every other page replaces the trailing slash
+// with .md. Add any new hub route here, or it will advertise the wrong path.
+const INDEX_ROUTES = new Set(['/', '/destinations/', '/fixed-departures/']);
+const pathname = Astro.url.pathname;
+const markdownPath = INDEX_ROUTES.has(pathname)
+	? `${pathname}index.md`
+	: `${pathname.replace(/\/$/, '')}.md`;
 const ogImageUrl = new URL(ogImage, Astro.site).href;
 ---
 
@@ -53,6 +62,7 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
 			relation, with type="text/markdown", for a page's own markdown version.
 		-->
 		<link rel="describedby" href="/llms.txt" />
+		<link rel="alternate" type="text/markdown" href={markdownPath} />
 
 		<!-- Favicons -->
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
