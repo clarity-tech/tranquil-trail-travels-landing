@@ -28,8 +28,11 @@
 - `/llms.txt` - AI/agent discoverability endpoint (`src/pages/llms.txt.ts`), in the llmstxt.org
   link-map format. Generated from the content collections, so new destinations, places and
   departures appear on their own; upcoming departures are filtered on `endDate` exactly as the
-  hub and the bar are. Advertised via `<link rel="alternate" type="text/plain">` in `Layout.astro`
-  and a pointer comment in `robots.txt` — it has no discovery mechanism of its own.
+  hub and the bar are. Advertised via `<link rel="describedby">` in `Layout.astro` and a pointer comment in
+  `robots.txt` — it has no discovery mechanism of its own. The relation is fixed by the
+  llmstxt.org v2 spec: `describedby` points at the covering llms.txt, while
+  `rel="alternate" type="text/markdown"` is reserved for a page's own `.md` version (which
+  this site does not serve yet). Do not swap them.
 - Content uses Astro Content Collections (`src/content/destinations/*.md`)
 - Images: Unsplash hotlinked with responsive `srcset` via `unsplashSrcset()` helper in `[id].astro`
 

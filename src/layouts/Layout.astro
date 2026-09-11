@@ -47,8 +47,12 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
 		<!-- Canonical URL -->
 		<link rel="canonical" href={canonical} />
 
-		<!-- llms.txt has no discovery mechanism of its own; advertise it. -->
-		<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+		<!--
+			llms.txt discovery, per the v2 spec (llmstxt.org): `describedby` points at
+			the llms.txt covering this page. Not `alternate` — v2 reserves that
+			relation, with type="text/markdown", for a page's own markdown version.
+		-->
+		<link rel="describedby" href="/llms.txt" />
 
 		<!-- Favicons -->
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
