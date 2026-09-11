@@ -13,6 +13,12 @@ jobs:
     steps:
       - name: Check out your repository
         uses: actions/checkout@v6
+        with:
+          # Full history: the sitemap derives each page's lastmod from the last
+          # commit that touched its source. A shallow clone would give every
+          # file the same date, so src/utils/git-lastmod.mjs omits lastmod
+          # entirely rather than lie — this is what keeps the dates real.
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v6

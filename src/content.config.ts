@@ -52,6 +52,10 @@ const destinations = defineCollection({
       metaTitle: z.string(),
       metaDescription: z.string(),
     }),
+    /** Optional override for the sitemap's git-derived lastmod — set it to
+     *  claim a substantive rewrite, or to stop a typo fix re-flagging the page.
+     *  See src/utils/git-lastmod.mjs. */
+    updatedDate: z.coerce.date().optional(),
     order: z.number().default(0),
   }),
 });
@@ -117,6 +121,10 @@ const subDestinations = defineCollection({
       metaTitle: z.string(),
       metaDescription: z.string(),
     }),
+    /** Optional override for the sitemap's git-derived lastmod — set it to
+     *  claim a substantive rewrite, or to stop a typo fix re-flagging the page.
+     *  See src/utils/git-lastmod.mjs. */
+    updatedDate: z.coerce.date().optional(),
     order: z.number().default(0),
   }),
 });
@@ -172,6 +180,10 @@ const fixedDepartures = defineCollection({
       metaTitle: z.string(),
       metaDescription: z.string(),
     }),
+    /** Optional override for the sitemap's git-derived lastmod — set it to
+     *  claim a substantive rewrite, or to stop a typo fix re-flagging the page.
+     *  See src/utils/git-lastmod.mjs. */
+    updatedDate: z.coerce.date().optional(),
     order: z.number().default(0),
   }),
 });

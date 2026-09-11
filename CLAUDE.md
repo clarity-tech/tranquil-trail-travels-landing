@@ -83,12 +83,21 @@ Full plan is in `GROWTH-PLAN.md`. Implementation order:
   anchored on `siteConfig.url`. Contact fields read from `siteConfig.contact`, so the
   machine-readable copy cannot drift from the `mailto:`/`wa.me` links. Per-page schemas
   (TouristDestination, TouristTrip, FAQPage, BreadcrumbList) stay in their own page files.
-- The sitemap deliberately has **no** `lastmod`. Accurate per-page dates are not available at build
-  time: the collections carry no `updatedDate`, and CI checks out shallow (`actions/checkout` with
-  no `fetch-depth`), so per-file git dates and mtimes are both just "now". Stamping build time on
-  every URL claims the whole site changed on each deploy, which is the kind of unreliable signal
-  crawlers learn to ignore. To do it properly, add `updatedDate` to the collection schemas and
-  `serialize` from it.
+- Sitemap `lastmod` is derived per page from git history by `src/utils/git-lastmod.mjs`, wired in
+  as the `serialize` hook in `astro.config.mjs`. Precedence: frontmatter `updatedDate` (an optional
+  escape hatch on every collection, unset everywhere today) → the last commit that touched the
+  page's **content** source → omit. Content source means the `.md` entry for collection pages and
+  the `.astro` file for the homepage and hubs; chrome is deliberately excluded, so a nav tweak in
+  `Layout.astro` does not re-date all eleven URLs.
+  Two things keep the dates honest, and both matter:
+  - **`fetch-depth: 0` in `.github/workflows/deploy.yml`.** On a shallow clone `git log` returns the
+    single commit's date for *every* file, with no error — which is exactly the "everything changed
+    today" signal `lastmod` is supposed to avoid. Never drop it.
+  - **The shallow guard in the helper.** If history is missing it omits `lastmod` entirely rather
+    than falling back to `new Date()`. Absent beats wrong: Google only honours `lastmod` while it
+    stays accurate. So verify changes here against a shallow clone, not just locally —
+    `git clone --depth 1 file://$PWD /tmp/t && cd /tmp/t && npm install && npm run build` should
+    produce a sitemap with zero `lastmod` entries.
 - `--dep-bar-h` (global.css) is the single source of truth for the departure bar's height: the bar,
   the fixed header's `top`, and the page wrapper's `padding-top` all read it, so dismissing the bar
   (which sets `.dep-bar-hidden` on `<html>`) collapses every offset at once. If you add anything
