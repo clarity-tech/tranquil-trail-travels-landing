@@ -1,0 +1,41 @@
+# Tranquil Trail Travels
+
+> Your premium guide to Northeast India
+
+Premium customized travel itineraries for Northeast India — Assam, Arunachal Pradesh, Meghalaya & Nagaland. Luxury journeys crafted for the discerning traveler.
+
+Every itinerary is custom-built and privately guided; trips are planned directly with a human over WhatsApp or email rather than booked online. Fixed departures are the exception — those are dated, priced, small-group trips with a published day-by-day plan.
+
+Every page below also has a clean markdown version: replace the trailing slash with `.md`, or use `index.md` for the three index pages (e.g. /destinations/assam/ -> /destinations/assam.md, /destinations/ -> /destinations/index.md). Each HTML page links its own with `rel="alternate" type="text/markdown"`.
+
+## Start here
+
+- [Homepage](https://tranquiltrailtravels.com/): The five-chapter story of Northeast India the rest of the site hangs off, plus current departures and recent field notes.
+
+## Destinations
+
+- [All destinations](https://tranquiltrailtravels.com/destinations/): Hub page listing every state we operate in.
+- [Assam — Where the Brahmaputra Writes Stories in Mist & Gold](https://tranquiltrailtravels.com/destinations/assam/): Assam is Northeast India's grand overture — a land where one-horned rhinos roam ancient floodplains, river islands drift like dreams, and tea gardens unfurl in emerald waves beneath a monsoon sky. Here, every sunrise gilds the Brahmaputra, and every cup of chai carries centuries of story.
+- [Arunachal Pradesh — The Land of the Dawn-Lit Mountains](https://tranquiltrailtravels.com/destinations/arunachal-pradesh/): Arunachal Pradesh is India's wildest frontier — a vertigo of snow peaks, sacred monasteries, and tribal homelands where twenty-six distinct peoples have shaped a mosaic of cultures as layered as the mountains themselves. This is where the sun first touches India, and where the ancient and the untouched still coexist.
+- [Meghalaya — The Abode of Clouds, Rooted in Living Stone](https://tranquiltrailtravels.com/destinations/meghalaya/): Meghalaya is a realm sculpted by rain and patience — where waterfalls plunge a thousand feet into limestone gorges, rivers run so clear they seem to vanish, and ancient root bridges grown by human hands span jungle chasms. This is India's wettest state, and every drop has carved something beautiful.
+- [Nagaland — Where Warriors Became Storytellers](https://tranquiltrailtravels.com/destinations/nagaland/): Nagaland is Northeast India's most fiercely original land — a mountainous realm of sixteen warrior tribes, each with its own language, dress, and mythology, united by a spirit of fierce independence and a hospitality that disarms on arrival. Here, the headhunter's grandson serves you rice beer and tells you everything.
+
+## Places within those states
+
+- [Tawang, Arunachal Pradesh](https://tranquiltrailtravels.com/destinations/arunachal-pradesh/tawang/): Perched at 10,000 feet in the western Himalayas, Tawang is home to India's largest Buddhist monastery, ancient Monpa culture, and some of the most dramatic mountain passes on Earth. Suggested stay: 3–4 days in Tawang itself, plus 2 days for the journey from Guwahati/Tezpur (the drive is part of the experience).
+- [Kaziranga National Park, Assam](https://tranquiltrailtravels.com/destinations/assam/kaziranga/): Home to two-thirds of the world's one-horned rhinoceros, Kaziranga is a UNESCO World Heritage Site where ancient grasslands and Brahmaputra floodplains shelter an astonishing density of wildlife. Suggested stay: 2–3 days to cover multiple zones (Central, Western, Eastern, Burapahar) and both jeep and elephant safaris.
+- [Cherrapunji, Meghalaya](https://tranquiltrailtravels.com/destinations/meghalaya/cherrapunji/): Once the wettest place on Earth, Cherrapunji (Sohra) is a landscape carved by millennia of rainfall — where living root bridges span jungle gorges, waterfalls plunge from cloud-draped cliffs, and limestone caves hold rivers of their own. Suggested stay: 2–3 days.
+
+## Fixed departures (dated group trips, priced)
+
+- [All upcoming departures](https://tranquiltrailtravels.com/fixed-departures/): Hub page listing every departure that has not yet concluded.
+- [A Meghalayan Winter Tale](https://tranquiltrailtravels.com/fixed-departures/meghalayan-winter-tale-2026/): 25 Dec 2026 – 31 Dec 2026. 6 nights / 7 days in Meghalaya, ₹28,800 per person, twin sharing. Guwahati → Shillong → Sohra → Pongtung → Shnongpdeng → Shillong → Guwahati
+
+## Contact
+
+Enquiries are handled person-to-person — there is no booking engine on this site.
+
+- WhatsApp (fastest): +916002324880 — https://wa.me/916002324880
+- Email: contact@tranquiltrailtravels.com
+- Instagram: https://www.instagram.com/tranquil_trail_travels
+- Sitemap: https://tranquiltrailtravels.com/sitemap.xml
