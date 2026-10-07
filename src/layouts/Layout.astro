@@ -4,6 +4,7 @@ import ChatWidget from '../components/ChatWidget.astro';
 import DepartureBar from '../components/DepartureBar.astro';
 import { getCollection } from 'astro:content';
 import { siteConfig } from '../data/site';
+import { isListed } from '../utils/departures';
 
 interface Props {
 	title: string;
@@ -26,7 +27,7 @@ const {
 } = Astro.props;
 
 const nextDeparture = (await getCollection('fixedDepartures'))
-  .filter(d => d.data.endDate.getTime() >= Date.now())
+  .filter(isListed)
   .sort((a, b) => a.data.startDate.getTime() - b.data.startDate.getTime())[0];
 
 const pageTitle = seoTitle || title;

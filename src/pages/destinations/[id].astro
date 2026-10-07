@@ -8,6 +8,7 @@ import Layout from '../../layouts/Layout.astro';
 import { getCollection, render } from 'astro:content';
 import { siteConfig } from '../../data/site';
 import { unsplashSrcset } from '../../utils/image';
+import { isListed } from '../../utils/departures';
 import FixedDepartureCard from '../../components/FixedDepartureCard.astro';
 
 export async function getStaticPaths() {
@@ -46,10 +47,10 @@ const subDestinations = allSubDestinations
     slug: sub.id.replace(/^[^/]+\//, ''),
   }));
 
-// Upcoming fixed departures for this state (past ones are dropped at build time)
+// Upcoming fixed departures for this state (past and sold-out ones are dropped at build time)
 const allDepartures = await getCollection('fixedDepartures');
 const fixedDepartures = allDepartures
-  .filter(dep => dep.data.parentState === entry.id && dep.data.endDate.getTime() >= Date.now())
+  .filter(dep => dep.data.parentState === entry.id && isListed(dep))
   .sort((a, b) => a.data.startDate.getTime() - b.data.startDate.getTime());
 
 

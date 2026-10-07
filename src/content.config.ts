@@ -146,7 +146,9 @@ const fixedDepartures = defineCollection({
     price: z.number(),
     priceCurrency: z.string().default("INR"),
     priceNote: z.string().default("Per person"),
-    /** "past" is derived from endDate at build time — do not set it here */
+    /** "past" is derived from endDate at build time — do not set it here.
+     *  "sold-out" takes the departure off every listing (see utils/departures.ts);
+     *  its own page stays live and offers a waitlist instead of seats. */
     status: z.enum(["open", "filling-fast", "sold-out"]).default("open"),
     routeSummary: z.string(),
     arrivalNote: z.string().optional(),

@@ -12,7 +12,7 @@ durationDays: 7
 price: 28800
 priceCurrency: "INR"
 priceNote: "Per person, twin sharing"
-status: "open"
+status: "sold-out"
 routeSummary: "Guwahati → Shillong → Sohra → Pongtung → Shnongpdeng → Shillong → Guwahati"
 arrivalNote: "Please ensure your flight lands at Guwahati Airport by or before 11:00 AM on Day 1."
 highlights:

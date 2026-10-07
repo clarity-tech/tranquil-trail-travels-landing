@@ -22,6 +22,11 @@
 - `/destinations/` - Hub page linking to 4 state-level destination pages
 - `/destinations/[id]/` - Dynamic destination pages (Assam, Arunachal Pradesh, Meghalaya, Nagaland) with hero, highlights, experiences, itineraries, FAQ, CTA sections
 - `/fixed-departures/[slug]/` - Dated, priced group departures (day-by-day, inclusions, group policy, TouristTrip + Offer schema). Linked from the parent state's destination page; past departures drop off that listing automatically and the page itself switches to a "concluded" state, both derived from `endDate` at build time.
+  **To close bookings early, set `status: "sold-out"`** in the departure's frontmatter. That takes it
+  off every listing (bar, nav, homepage, hub, state page, llms.txt, `.md` twins — one filter,
+  `isListed()` in `src/utils/departures.ts`) while its own page stays live with a waitlist CTA.
+  Do not delete the file or move `endDate` to do this: the first 404s an indexed URL, the second
+  makes the page claim the trip has already run.
 - `/fixed-departures/` - Hub listing all upcoming departures. Target of the header's "Departures"
   nav item (hidden below `sm` — the logo plus two nav links does not fit at 320px). Has a real empty
   state, so it degrades gracefully rather than 404ing once every departure lapses.

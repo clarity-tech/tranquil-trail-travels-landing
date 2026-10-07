@@ -9,12 +9,13 @@ import FixedDepartureCard from '../components/FixedDepartureCard.astro';
 import InstagramEmbeds from '../components/InstagramEmbeds.astro';
 import { getCollection } from 'astro:content';
 import { siteConfig } from '../data/site';
+import { isListed } from '../utils/departures';
 
-// Upcoming fixed departures only. Once the last one's endDate passes this list
-// is empty and the section below removes itself — the homepage returns to its
-// current shape with no manual edit.
+// Upcoming, bookable fixed departures only. Once the last one ends or sells out
+// this list is empty and the section below removes itself — the homepage
+// returns to its current shape with no manual edit.
 const upcomingDepartures = (await getCollection('fixedDepartures'))
-  .filter(dep => dep.data.endDate.getTime() >= Date.now())
+  .filter(isListed)
   .sort((a, b) => a.data.startDate.getTime() - b.data.startDate.getTime());
 ---
 

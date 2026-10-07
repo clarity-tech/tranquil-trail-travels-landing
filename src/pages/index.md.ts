@@ -2,13 +2,14 @@ import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { indexMarkdown, markdownResponse, mdLink } from "../utils/markdown-view";
 import { siteConfig } from "../data/site";
+import { isListed } from "../utils/departures";
 
 export const GET: APIRoute = async () => {
   const destinations = (await getCollection("destinations")).sort(
     (a, b) => a.data.order - b.data.order
   );
   const upcoming = (await getCollection("fixedDepartures"))
-    .filter((d) => d.data.endDate.getTime() >= Date.now())
+    .filter(isListed)
     .sort((a, b) => a.data.startDate.getTime() - b.data.startDate.getTime());
 
   return markdownResponse(

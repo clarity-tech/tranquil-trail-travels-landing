@@ -148,7 +148,9 @@ export function fixedDepartureMarkdown(entry: CollectionEntry<"fixedDepartures">
       `> ${f.description}`,
       concluded
         ? `**This departure has concluded.** Dates for the next edition are planned on request — ${whatsappUrl}`
-        : null,
+        : f.status === "sold-out"
+          ? `**This departure is fully booked.** Join the waitlist for a released seat or the next dates — ${whatsappUrl}`
+          : null,
       facts,
       body.trim(),
       section("Highlights", list(f.highlights)),

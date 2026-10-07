@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { siteConfig } from "../data/site";
+import { isListed } from "../utils/departures";
 
 /**
  * /llms.txt — https://llmstxt.org
@@ -91,20 +92,20 @@ export const GET: APIRoute = async () => {
   }
 
   // Matches Layout.astro and the departures hub: a trip is listed until the
-  // day it ends, then drops off the site — and must drop off here with it.
+  // day it ends or sells out, then drops off the site — and must drop off here
+  // with it.
   const upcoming = departures
-    .filter((d) => d.data.endDate.getTime() >= Date.now())
+    .filter(isListed)
     .sort((a, b) => a.data.startDate.getTime() - b.data.startDate.getTime());
 
   if (upcoming.length > 0) {
     const departureLinks = upcoming.map((d) => {
       const dates = `${dateFmt.format(d.data.startDate)} – ${dateFmt.format(d.data.endDate)}`;
       const price = `${priceFmt.format(d.data.price)} ${d.data.priceNote.toLowerCase()}`;
-      const soldOut = d.data.status === "sold-out" ? " Currently sold out." : "";
       return link(
         d.data.title,
         `/fixed-departures/${d.id}/`,
-        `${dates}. ${d.data.durationNights} nights / ${d.data.durationDays} days in ${d.data.state}, ${price}. ${d.data.routeSummary}${soldOut}`
+        `${dates}. ${d.data.durationNights} nights / ${d.data.durationDays} days in ${d.data.state}, ${price}. ${d.data.routeSummary}`
       );
     });
     sections.push(

@@ -1,10 +1,11 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { dateFmt, indexMarkdown, markdownResponse, mdLink, priceFmt } from "../../utils/markdown-view";
+import { isListed } from "../../utils/departures";
 
 export const GET: APIRoute = async () => {
   const upcoming = (await getCollection("fixedDepartures"))
-    .filter((d) => d.data.endDate.getTime() >= Date.now())
+    .filter(isListed)
     .sort((a, b) => a.data.startDate.getTime() - b.data.startDate.getTime());
 
   return markdownResponse(
